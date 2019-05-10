@@ -8,118 +8,7 @@
     <meta name="description" content="Yelp Data Visualization">
     <meta name="author" content="Shraddha Chadha">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <style>
-        /*
- * Globals
- */
-
-        /* Links */
-        a,
-        a:focus,
-        a:hover {
-            color: #fff;
-        }
-
-        /* Custom default button */
-        .btn-secondary,
-        .btn-secondary:hover,
-        .btn-secondary:focus {
-            color: #333;
-            text-shadow: none; /* Prevent inheritance from `body` */
-            background-color: #fff;
-            border: .05rem solid #fff;
-        }
-
-
-        /*
-         * Base structure
-         */
-
-        html,
-        body {
-            height: 100%;
-            background-color: #333;
-        }
-
-        body {
-            display: -ms-flexbox;
-            display: flex;
-            color: #fff;
-            text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
-            box-shadow: inset 0 0 5rem rgba(0, 0, 0, .5);
-        }
-
-        .cover-container {
-            max-width: 42em;
-        }
-
-
-        /*
-         * Header
-         */
-        .masthead {
-            margin-bottom: 2rem;
-        }
-
-        .masthead-brand {
-            margin-bottom: 0;
-        }
-
-        .nav-masthead .nav-link {
-            padding: .25rem 0;
-            font-weight: 700;
-            color: rgba(255, 255, 255, .5);
-            background-color: transparent;
-            border-bottom: .25rem solid transparent;
-        }
-
-        .nav-masthead .nav-link:hover,
-        .nav-masthead .nav-link:focus {
-            border-bottom-color: rgba(255, 255, 255, .25);
-        }
-
-        .nav-masthead .nav-link + .nav-link {
-            margin-left: 1rem;
-        }
-
-        .nav-masthead .active {
-            color: #fff;
-            border-bottom-color: #fff;
-        }
-
-        @media (min-width: 48em) {
-            .masthead-brand {
-                float: left;
-            }
-            .nav-masthead {
-                float: right;
-            }
-        }
-
-
-        /*
-         * Cover
-         */
-        .cover {
-            padding: 0 1.5rem;
-        }
-        .cover .btn-lg {
-            padding: .75rem 1.25rem;
-            font-weight: 700;
-        }
-
-
-        /*
-         * Footer
-         */
-        .mastfoot {
-            color: rgba(255, 255, 255, .5);
-        }
-
-        .page-container {
-
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 </head>
 
 <body class="">
@@ -127,46 +16,44 @@
 
 
         <!-- VIEW 1 -->
-        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="home">
+                <div id="yt-background-video"></div>
 
-            <!-- HEADER MENU -->
-            <header class="masthead mb-auto">
-                <div class="inner">
-                    <h3 class="masthead-brand">CMPE280</h3>
-                    <nav class="nav nav-masthead justify-content-center">
-                        <a class="nav-link active" href="#">Home</a>
-                        <a class="nav-link" href="#">Chart 1</a>
-                        <a class="nav-link" href="#">Chart 2</a>
-                        <a class="nav-link" href="#">Chart 3</a>
-                        <a class="nav-link" href="#">Chart 4</a>
-                        <a class="nav-link" href="#">Chart 5</a>
-                    </nav>
-                </div>
-            </header>
-            <!--END: HEADER MENU -->
+                <!-- HEADER MENU -->
+                <header class="masthead mb-auto">
+                    <div class="container p-3">
+                        <h3 class="masthead-brand">CMPE280</h3>
+                        <nav class="nav nav-masthead justify-content-center">
+                            <a class="nav-link active" href="#" data-title="home">Home</a>
+                            <a class="nav-link" href="#" data-title="about">About</a>
+                            <a class="nav-link" href="#" data-title="rating">Rating</a>
+                            <a class="nav-link" href="#" data-title="cuisines">Cuisines</a>
+                            <a class="nav-link" href="#" data-title="statewise">Statewise</a>
+                            <a class="nav-link" href="#" data-title="feature">Features</a>
+                        </nav>
+                    </div>
+                </header>
+                <!--END: HEADER MENU -->
 
-            <main role="main" class="inner cover">
-                <h1 class="cover-heading">Yelp Data Visualization</h1>
-                <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
-                <p class="lead">
-                    <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
-                </p>
-                <div id="like_button_container"></div>
-            </main>
+                <main role="main" class="inner cover">
+                    <h1 class="cover-heading">Yelp Data Visualization</h1>
+                    <div>
+                        <span class="lead" id="typed"></span>
+                    </div>
 
-            <footer class="mastfoot mt-auto">
-                <div class="inner">
-                    <p>Project by Team CMPE280</p>
-                </div>
-            </footer>
+                    <p class="lead">
+                        <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
+                    </p>
+                    <div id="like_button_container"></div>
+                </main>
         </div>
         <!--END: VIEW 1 -->
 
 
         <!-- VIEW 2 -->
-        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="about">
             <main role="main" class="inner cover">
-                <h1 class="cover-heading">CHART 1</h1>
+                <h1 class="cover-heading">About</h1>
                 <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
                 <p class="lead">
                     <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
@@ -174,33 +61,33 @@
             </main>
         </div>
 
-        <!-- VIEW 3 -->
-        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <!-- VIEW 3-->
+        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="rating">
             <main role="main" class="inner cover">
-                <h1 class="cover-heading">CHART 2</h1>
+                <h1 class="cover-heading">Ratings</h1>
                 <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
                 <p class="lead">
                     <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
                 </p>
             </main>
         </div>
+
 
         <!-- VIEW 4 -->
-        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="cuisines">
             <main role="main" class="inner cover">
-                <h1 class="cover-heading">CHART 3</h1>
+                <h1 class="cover-heading">Cuisines</h1>
                 <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
                 <p class="lead">
                     <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
                 </p>
             </main>
         </div>
-
 
         <!-- VIEW 5 -->
-        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="statewise">
             <main role="main" class="inner cover">
-                <h1 class="cover-heading">CHART 4</h1>
+                <h1 class="cover-heading">Statewise Analysis</h1>
                 <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
                 <p class="lead">
                     <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
@@ -208,32 +95,72 @@
             </main>
         </div>
 
-        <!-- VIEW 6 -->
-        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column">
+         <!-- VIEW 6 -->
+        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="features">
             <main role="main" class="inner cover">
-                <h1 class="cover-heading">CHART 5</h1>
+                <h1 class="cover-heading">Features</h1>
                 <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
                 <p class="lead">
                     <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
                 </p>
             </main>
         </div>
+
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script crossorigin src="https://d3js.org/d3.v3.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+    <script src="/scripts/jquery.youtubebackground.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.9"></script>
+
     <script>
         $(document).ready(function () {
-            console.log('Document ready for action!!');
             $(".nav .nav-link").on('click', function () {
+                $(".nav-link").removeClass('active');
+                $(this).addClass('active');
+                $("html, body").animate({scrollTop: $('[data-view='+ $(this).data('title') +']').offset().top }, 2000);
+            });
 
+            $('#yt-background-video').YTPlayer({
+                fitToBackground: true,
+                videoId: 'FaHTfgV7ii4',
+                playerVars: {
+                    controls : 0,
+                    showinfo: 0,
+                    branding: 0,
+                    rel: 0,
+                    autohide: 0,
+                }
+            });
+
+            var typed = new Typed('#typed', {
+                strings: ["Welcome to Yelp Data Visualization", "This website will help you gain insights using Yelp's public data", "Navigate through different types of analysis in the header."],
+                smartBackspace: false,
+                typeSpeed: 100
+            });
+
+            $(window).on('scroll', function () {
+                if ($(this).scrollTop() > 10) {
+                    $("header").addClass('sticky');
+                }
+                else {
+                    $("header").removeClass('sticky');
+                }
+
+                $(".flex-column").each(function () {
+                    var pagePosition = $(this)[0].getBoundingClientRect();
+                    if (pagePosition.y >= 0 && pagePosition.y < 250 && !$(".nav-link[data-title="+ $(this).data('view') +"]").hasClass('active')) {
+                        $(".nav-link.active").removeClass('active');
+                        $(".nav-link[data-title="+ $(this).data('view') +"]").addClass('active');
+                    }
+                });
             });
         });
     </script>
-    <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
-    <!-- Load our React component. -->
-    <script src="/like_button.js"></script>
 </body>
 </html>

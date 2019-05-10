@@ -1,16 +1,18 @@
 // stuff required for things to work
 var express = require('express');
 var app = express();
-var mongodb = require('mongodb');
+var mongoose = require('mongoose');
 var db;
 
-mongodb.connect('mongodb://admin:cmpe280admin@ds151820.mlab.com:51820/sputniks', { useNewUrlParser: true }, function (err, client) {
-  if (err) {
-    console.error(err)
-    return;
-  }
-  db = client.db('sputniks');
-});
+//Connect to the database
+mongoose.connect('mongodb://admin:cmpe280admin@ds151820.mlab.com:51820/sputniks');
+
+//Creating Schemas of collections
+const Schema = mongoose.Schema;
+let restaurantSchema = new Schema({}, {collection: 'restaurants'});
+
+//Create Models
+const restaurants = mongoose.model('restaurants', restaurantSchema);
 
 // map http://URL/public route to local /public directory on the system
 app.use(express.static(__dirname + '/public'));
@@ -20,15 +22,25 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/public/index.html');
 });
 
-// example /city API
-app.get('/city', function(req, res) {
-    let restaurants = db.collection('restaurants');
-    restaurants.find({"state": req.body.state}).distinct('city', function(err, c) {
+//City API
+app.post('/city', function(req, res) {
+    restaurants.find({"state": req.body.state}).distinct('city', function(err, data) {
         if (err) {
             console.log(err);
             res.send(err);
         }
-        res.json(c);
+        res.json(data);
+    });
+});
+
+//Restaurant Data API
+app.post('/get_restaurant', function(req, res) {
+    restaurants.find({"city": req.body.city}, function(err, data) {
+        if (err) {
+            console.log(err);
+            res.send(err);
+        }
+        res.json(data);
     });
 });
 
