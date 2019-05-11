@@ -111,10 +111,24 @@ function getValidCategories(req, res, next) {
 let clean_data_helpers = [getCategoryMap, getValidCategories];
 
 //Restaurant Data API
-router.post('/restaurants',
+router.get('/restaurants',
 function(req, res, next) {
-    let city = req.body.city;
-    restaurants.find({ "city": city}, function(err, data) {
+    let city = req.query.city;
+    let cuisine = req.query.selectedCategories;
+
+    if(cuisine) {
+        restaurants.aggregate([
+        { $project : { count: '1', category : { $split: ["$categories", ", "] }} },
+        { $unwind : "$category" },
+        { $match : { category : "Mexican" } },
+        //{ $group : { _id: { "selectedCategory" : "$category" }, count : { "$sum" : "$count" } } }
+        ], function(err,data) {
+            console.log(data);
+        });
+       next();
+    }
+    else {
+        restaurants.find({ "city": city}, function(err, data) {
             if(err) {
                 console.log('Error finding restaurants',err);
                 res.send(err);
@@ -122,7 +136,7 @@ function(req, res, next) {
             res.locals.response = data;
             next();
         });
-
+    }
 },
 clean_data_helpers,
 function(req, res) {
@@ -140,7 +154,7 @@ function(req, res) {
         tempResult.push(temp);
     }
     results['result'] = tempResult;
-    console.log("Results",results);
+    // console.log("Results",results);
     res.json(results);
 });
 

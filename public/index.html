@@ -3,20 +3,20 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-
     <title>Yelp Data Visualization</title>
     <meta name="description" content="Yelp Data Visualization">
     <meta name="author" content="Shraddha Chadha">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
     <link rel="stylesheet" type="text/css" href="/css/style.css"/>
 </head>
 
 <body class="">
-    <div class="container">
+    <!-- UBER CONTAINER -->
+    <div class="container uber-container">
 
-
-        <!-- VIEW 1 -->
+        <!-- VIEW 1: HOME -->
         <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="home">
             <div style="
                 position: absolute;
@@ -43,43 +43,38 @@
                     </div>
                 </header>
                 <!--END: HEADER MENU -->
-
+                <!-- WELCOME TEXT -->
                 <main role="main" class="inner cover">
                     <h1 class="cover-heading">Yelp Data Visualization</h1>
                     <div>
                         <span class="lead" id="typed"></span>
                     </div>
                 </main>
+                <!--END: WELCOME TEXT -->
         </div>
         <!--END: VIEW 1 -->
 
 
-        <!-- VIEW 2 -->
+        <!-- VIEW 2: ABOUT -->
         <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="about">
             <main role="main" class="inner cover">
                 <h1 class="cover-heading">What is this page about?</h1>
                 <p class="lead">This is the about page.</p>
             </main>
         </div>
+        <!--END: VIEW 2: ABOUT -->
 
-        <!-- VIEW 3-->
+        <!-- VIEW 3: RATINGS -->
         <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="rating">
             <main role="main" class="inner cover">
                 <h1 class="cover-heading">Ratings</h1>
                 <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
-                <div class="row">
-                    <div class="col-md">
-                        <div id="ratings-chart-1"></div>
-                    </div>
-                    <div class="col-md">
-                        <div id="ratings-chart-2"></div>
-                    </div>
-                </div>
+                <div id="rating-charts"></div>
             </main>
         </div>
+        <!--END: VIEW 3: RATINGS -->
 
-
-        <!-- VIEW 4 -->
+        <!-- VIEW 4: CUISINES -->
         <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="cuisines">
             <main role="main" class="inner cover">
                 <h1 class="cover-heading">Cuisines</h1>
@@ -90,7 +85,7 @@
             </main>
         </div>
 
-        <!-- VIEW 5 -->
+        <!-- VIEW 5: STATEWISE RATINGS -->
         <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="statewise">
             <main role="main" class="inner cover">
                 <h1 class="cover-heading">Statewise Analysis</h1>
@@ -100,8 +95,21 @@
                 </p>
             </main>
         </div>
+        <!--END: VIEW 4: CUISINES -->
 
-         <!-- VIEW 6 -->
+         <!-- VIEW 6: CHECKINGS-->
+        <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="checkins">
+            <main role="main" class="inner cover">
+                <h1 class="cover-heading">Checkins</h1>
+                <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
+                <p class="lead">
+                    <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
+                </p>
+            </main>
+        </div>
+        <!--END: VIEW 6: CHECKINGS-->
+
+        <!-- VIEW 7: FEATURES-->
         <div class="row d-flex w-100 h-100 p-3 mx-auto flex-column" data-view="features">
             <main role="main" class="inner cover">
                 <h1 class="cover-heading">Features</h1>
@@ -111,66 +119,34 @@
                 </p>
             </main>
         </div>
-
+        <!--END: VIEW 7: FEATURES-->
     </div>
+    <!-- END: UBER CONTAINER -->
 
-
+    <!-- IMPORT LIBRARIES VIA CDN : TBD npm/bower-->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/i18n/defaults-*.min.js"></script>
     <script crossorigin src="https://d3js.org/d3.v3.min.js"></script>
     <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
     <script src="/scripts/jquery.youtubebackground.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.9"></script>
 
-    <script>
-        $(document).ready(function () {
-            $(".nav .nav-link").on('click', function () {
-                $(".nav-link").removeClass('active');
-                $(this).addClass('active');
-                $("html, body").animate({scrollTop: $('[data-view='+ $(this).data('title') +']').offset().top }, 2000);
-            });
+    <!-- PROJECT FILES -->
+    <script src="/js/dom.js"></script>
 
-            $('#yt-background-video').YTPlayer({
-                fitToBackground: true,
-                videoId: 'FaHTfgV7ii4',
-                playerVars: {
-                    modestbranding: 0,
-                    autoplay: 1,
-                    controls: 1,
-                    showinfo: 0,
-                    branding: 0,
-                    rel: 0,
-                    autohide: 0,
-                    start: 59
-                }
-            });
+    <!-- REACT COMPONENTS -->
+    <script src="/components/rating-charts.js" type="text/babel"></script>
+    <script src="/components/cuisine-charts.js" type="text/babel"></script>
+    <script src="/components/state-charts.js" type="text/babel"></script>
+    <script src="/components/checkin-charts.js" type="text/babel"></script>
+    <script src="/components/price-charts.js" type="text/babel"></script>
+    <script src="/components/feature-charts.js" type="text/babel"></script>
 
-            var typed = new Typed('#typed', {
-                strings: ["Welcome to Yelp Data Visualization", "This website will help you gain insights using Yelp's public data", "Navigate through different types of analysis in the header."],
-                smartBackspace: false,
-                typeSpeed: 100
-            });
-
-            $(window).on('scroll', function () {
-                if ($(this).scrollTop() > 10) {
-                    $("header").addClass('sticky');
-                }
-                else {
-                    $("header").removeClass('sticky');
-                }
-
-                $(".flex-column").each(function () {
-                    var pagePosition = $(this)[0].getBoundingClientRect();
-                    if (pagePosition.y >= 0 && pagePosition.y < 250 && !$(".nav-link[data-title="+ $(this).data('view') +"]").hasClass('active')) {
-                        $(".nav-link.active").removeClass('active');
-                        $(".nav-link[data-title="+ $(this).data('view') +"]").addClass('active');
-                    }
-                });
-            });
-        });
-    </script>
-    <script src="/components/ratings_by_state_chart.js" type="text/javascript"></script>
 </body>
 </html>
