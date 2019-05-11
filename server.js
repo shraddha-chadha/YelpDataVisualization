@@ -1,15 +1,20 @@
 // stuff required for things to work
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
 var mongoose = require('mongoose');
 var db;
+
+app.use(bodyParser.urlencoded());
+
+app.use(bodyParser.json());
 
 //Connect to the database
 mongoose.connect('mongodb://admin:cmpe280admin@ds151820.mlab.com:51820/sputniks');
 
 //Creating Schemas of collections
 const Schema = mongoose.Schema;
-let restaurantSchema = new Schema({}, {collection: 'restaurants'});
+const restaurantSchema = new Schema({}, {collection: 'restaurants'});
 
 //Create Models
 const restaurants = mongoose.model('restaurants', restaurantSchema);
@@ -34,15 +39,23 @@ app.post('/city', function(req, res) {
 });
 
 //Restaurant Data API
-app.post('/get_restaurant', function(req, res) {
-    restaurants.find({"city": req.body.city}, function(err, data) {
-        if (err) {
+app.post('/restaurants', function(req, res) {
+    console.log(req);
+    restaurants.find({ "city": req.body.city}, function(err, data) {
+            // console.log(c);
             console.log(err);
-            res.send(err);
-        }
-        res.json(data);
-    });
+            res.send(data);
+        });
 });
+    ;
+    // restaurants.find({ "city": city }, function(err, data) {
+    //     if (err) {
+    //         console.log(err);
+    //         res.send(err);
+    //     }
+    //     res.json(data);
+    // });
+
 
 // create the server on port 8081
 var server = app.listen(8081, function () {
