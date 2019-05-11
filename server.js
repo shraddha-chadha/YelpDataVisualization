@@ -4,13 +4,20 @@ let bodyParser = require('body-parser');
 let app = express();
 let router = express.Router();
 let mongoose = require('mongoose');
-let db;
 
 //Body Parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+
+// map http://URL/public route to local /public directory on the system
+app.use(express.static(__dirname + '/public'));
+
+// by default serve index.html
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/public/index.html');
+});
 
 //Connect to the database
 mongoose.connect('mongodb://admin:cmpe280admin@ds151820.mlab.com:51820/sputniks', { useNewUrlParser: true });
@@ -22,19 +29,23 @@ const restaurantSchema = new Schema({}, {collection: 'restaurants'});
 //Create Models
 const restaurants = mongoose.model('restaurants', restaurantSchema);
 
-// map http://URL/public route to local /public directory on the system
-app.use(express.static(__dirname + '/public'));
-
-// by default serve index.html
-app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/public/index.html');
-});
-
+// Define the router for /api
 app.use('/api', router);
 
+//State API
+router.get('/state', function(req, res) {
+    restaurants.find().distinct('state', function(err, data) {
+        if (err) {
+            console.log(err);
+            res.send(err);
+        }
+        res.json(data);
+    });
+});
+
 //City API
-router.post('/city', function(req, res) {
-    let state = req.body.state;
+router.get('/city', function(req, res) {
+    let state = req.query.state;
     restaurants.find({"state": state}).distinct('city', function(err, data) {
         if (err) {
             console.log(err);
@@ -44,55 +55,41 @@ router.post('/city', function(req, res) {
     });
 });
 
-//Helper functions to clean the data
-function getCategoryMap(req, res, next){
-    let data = res.locals.response;
-    let categoryMap = {};
-    for (let i = 0; i < data.length; i++) {
-        let restCategoryList = data[i]._doc.categories.split(",");
-        for (let j = 0; j < restCategoryList.length; j++) {
-            let categoryName = restCategoryList[j].trim().replace("\"", '');
-            categoryMap[categoryName] = (categoryMap[categoryName] == undefined ? 1 : categoryMap[categoryName] + 1);
-        }
-    }
-    res.locals.categoryMap = categoryMap;
-    //console.log(categoryMap);
-    next();
-}
+//Restaurant Data API
 
-//Helper functions to clean the data
+//Helper functions to get Valid Categories
 function getValidCategories(req, res, next) {
     let valid_categories = ["American (New)",
-    "American (Traditional)",
-    "Asian Fusion",
-    "Bakeries",
-    "Barbeque",
-    "Bars",
-    "Breakfast & Brunch",
-    "Burgers",
-    "Buffets",
-    "Cafes",
-    "Chinese",
-    "Canadian (New)",
-    "Caribbean",
-    "Desserts",
-    "Fast Food",
-    "Fish & Chips",
-    "French",
-    "Indian",
-    "Italian",
-    "Japanese",
-    "Korean",
-    "Mexican",
-    "Mediterranean",
-    "Modern European",
-    "Persian/Iranian",
-    "Pizza",
-    "Sandwiches",
-    "Steakhouses",
-    "Sushi Bars",
-    "Thai",
-    "Vietnamese"];
+        "American (Traditional)",
+        "Asian Fusion",
+        "Bakeries",
+        "Barbeque",
+        "Bars",
+        "Breakfast & Brunch",
+        "Burgers",
+        "Buffets",
+        "Cafes",
+        "Chinese",
+        "Canadian (New)",
+        "Caribbean",
+        "Desserts",
+        "Fast Food",
+        "Fish & Chips",
+        "French",
+        "Indian",
+        "Italian",
+        "Japanese",
+        "Korean",
+        "Mexican",
+        "Mediterranean",
+        "Modern European",
+        "Persian/Iranian",
+        "Pizza",
+        "Sandwiches",
+        "Steakhouses",
+        "Sushi Bars",
+        "Thai",
+        "Vietnamese"];
     let data = res.locals.categoryMap;
     let result = [];
 
@@ -108,64 +105,83 @@ function getValidCategories(req, res, next) {
     res.locals.validCategories = result;
     next();
 }
+
+//Helper functions to get category Map
+function getCategoryMap(req, res, next){
+    let data = res.locals.response;
+    let categoryMap = {};
+    for (let i = 0; i < data.length; i++) {
+        let restCategoryList = data[i]._doc.categories.split(",");
+        for (let j = 0; j < restCategoryList.length; j++) {
+            let categoryName = restCategoryList[j].trim().replace("\"", '');
+            categoryMap[categoryName] = (categoryMap[categoryName] == undefined ? 1 : categoryMap[categoryName] + 1);
+        }
+    }
+    res.locals.categoryMap = categoryMap;
+    //console.log(categoryMap);
+    next();
+}
+
 let clean_data_helpers = [getCategoryMap, getValidCategories];
 
-//Restaurant Data API
+//API Definition
 router.get('/restaurants',
-function(req, res, next) {
-    let city = req.query.city;
-    let cuisine = req.query.selectedCategories.split(',');
+    function(req, res, next)
+    {
+        let city = req.query.city;
+        let cuisine = req.query.selectedCategories.split(',');
 
-    if(cuisine) {
-        let regexExp = "^";
-        let len = cuisine.length;
-        for(let k=0; k < len; k++) {
-            regexExp += cuisine[k];
-            if(k != len-1) {
-                regexExp += '|^';
+        if(cuisine) {
+            let regexExp = "^";
+            let len = cuisine.length;
+            for(let k=0; k < len; k++) {
+                regexExp += cuisine[k];
+                if(k != (len - 1)) {
+                    regexExp += '|^';
+                }
             }
+
+            restaurants.find( {$and: [ {'city': city}, {"categories": { "$regex": regexExp}}]}, function (err, data) {
+                if(err) {
+                    console.log('Error finding restaurants',err);
+                    res.send(err);
+                }
+                res.locals.response = data;
+                next();
+            });
         }
-        console.log(regexExp);
+        else {
+            restaurants.find({ "city": city}, function(err, data) {
+                if(err) {
+                    console.log('Error finding restaurants',err);
+                    res.send(err);
+                }
+                res.locals.response = data;
+                next();
+            });
+        }
+    },
+    clean_data_helpers,
+    function(req, res)
+    {
+        let originalResponse = res.locals.response;
+        let validCategories = res.locals.validCategories;
+        let results = {};
+        let tempResult = [];
+        let records_len = originalResponse.length;
+        results['count'] = records_len;
+        results['validCategories'] = validCategories
 
-        restaurants.find( {$and: [ {'city': city}, {"categories": { "$regex": regexExp}}]}, function (err, data) {
-            if(err) {
-                console.log('Error finding restaurants',err);
-                res.send(err);
-            }
-            res.locals.response = data;
-            next();
-        });
+        for(let j =0; j < records_len; j++ ) {
+            let temp = {};
+            Object.assign(temp,originalResponse[j]._doc);
+            tempResult.push(temp);
+        }
+        results['results'] = tempResult;
+        // console.log("Results",results);
+        res.json(results);
     }
-    else {
-        restaurants.find({ "city": city}, function(err, data) {
-            if(err) {
-                console.log('Error finding restaurants',err);
-                res.send(err);
-            }
-            res.locals.response = data;
-            next();
-        });
-    }
-},
-clean_data_helpers,
-function(req, res) {
-    let originalResponse = res.locals.response;
-    let validCategories = res.locals.validCategories;
-    let results = {};
-    let tempResult = [];
-    let records_len = originalResponse.length;
-    results['count'] = records_len;
-    results['validCategories'] = validCategories
-
-    for(let j =0; j < records_len; j++ ) {
-        let temp = {};
-        Object.assign(temp,originalResponse[j]._doc);
-        tempResult.push(temp);
-    }
-    results['results'] = tempResult;
-    // console.log("Results",results);
-    res.json(results);
-});
+    );
 
 // create the server on port 8081
 var server = app.listen(8081, function () {
