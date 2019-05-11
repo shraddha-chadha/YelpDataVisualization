@@ -114,18 +114,27 @@ let clean_data_helpers = [getCategoryMap, getValidCategories];
 router.get('/restaurants',
 function(req, res, next) {
     let city = req.query.city;
-    let cuisine = req.query.selectedCategories;
+    let cuisine = req.query.selectedCategories.split(',');
 
     if(cuisine) {
-        restaurants.aggregate([
-        { $project : { count: '1', category : { $split: ["$categories", ", "] }} },
-        { $unwind : "$category" },
-        { $match : { category : "Mexican" } },
-        //{ $group : { _id: { "selectedCategory" : "$category" }, count : { "$sum" : "$count" } } }
-        ], function(err,data) {
-            console.log(data);
+        let regexExp = "^";
+        let len = cuisine.length;
+        for(let k=0; k < len; k++) {
+            regexExp += cuisine[k];
+            if(k != len-1) {
+                regexExp += '|^';
+            }
+        }
+        console.log(regexExp);
+
+        restaurants.find( {$and: [ {'city': city}, {"categories": { "$regex": regexExp}}]}, function (err, data) {
+            if(err) {
+                console.log('Error finding restaurants',err);
+                res.send(err);
+            }
+            res.locals.response = data;
+            next();
         });
-       next();
     }
     else {
         restaurants.find({ "city": city}, function(err, data) {
@@ -153,7 +162,7 @@ function(req, res) {
         Object.assign(temp,originalResponse[j]._doc);
         tempResult.push(temp);
     }
-    results['result'] = tempResult;
+    results['results'] = tempResult;
     // console.log("Results",results);
     res.json(results);
 });
