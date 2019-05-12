@@ -141,7 +141,7 @@ class RatingCharts extends React.Component {
         });
     }
     return (
-        <div className="container">
+        <div className="container p-0">
             <div className="row view-container">
                 <div className="col-md cuisine-filter chart-filters">
                         <CuisineDropdown onCuisineSelect={this.onCuisineSelect.bind(this)}/>

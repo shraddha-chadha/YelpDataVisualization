@@ -40,7 +40,7 @@ class PriceCharts extends React.Component {
 
   render() {
     return (
-        <div className="container">
+        <div className="container p-0">
             <div className="row view-container">
                <div className="col-md state-filter chart-filters">
                     <StateDropdown onStateSelect={this.onStateSelect.bind(this)}/>

@@ -78,10 +78,10 @@ class CuisineCharts extends React.Component {
             right: 10,
             bottom: 0
         };
-        var diameter = 600;
+        var diameter = 400;
         var color = d3.scaleOrdinal(d3.schemeCategory20);
         let width = $(selector).width() - margin.left -margin.right;
-        let height = 600 - margin.top - margin.bottom;
+        let height = 500 - margin.top - margin.bottom;
 
         var bubble = d3.pack(dataset)
             .size([diameter, diameter])
@@ -92,10 +92,6 @@ class CuisineCharts extends React.Component {
             .attr("width", "100%")
             .attr("height", height)
             .attr("class", "bubble");
-
-            var zoom = d3.zoom().on("zoom", function () {
-                        svg.attr("transform", d3.event.transform)
-                    });
 
         var nodes = d3.hierarchy(dataset)
             .sum(function(d) { return d.Count; });
@@ -157,10 +153,6 @@ class CuisineCharts extends React.Component {
 
         d3.select(self.frameElement)
             .style("height", diameter + "px");
-
-            svg.call(zoom);
-
-
   }
 
  onCuisineSelect(cuisineList) {
@@ -188,13 +180,70 @@ class CuisineCharts extends React.Component {
      if (state) {
          return (
             <div className="col-md city-filter chart-filters">
-                           <CityDropdown stateName={this.state.selectedStates[0]} onCitySelect={this.onCitySelect.bind(this)}/>
-                        </div>
+                        <CityDropdown stateName={this.state.selectedStates[0]} onCitySelect={this.onCitySelect.bind(this)}/>
+            </div>
          );
      }
      else {
          return null;
      }
+ }
+
+ drawAllCharts(response) {
+    let barChartData = [
+        {
+            'count': 0,
+            'priceRange': '$'
+        },
+        {
+            'count': 0,
+            'priceRange': '$$'
+        },
+        {
+            'count': 0,
+            'priceRange': '$$$'
+        },
+        {
+            'count': 0,
+            'priceRange': '$$$$'
+        },
+        {
+            'count': 0,
+            'priceRange': '?'
+        }
+    ];
+    response.data.results.map((item) => {
+        if (item.attributes && item.attributes.RestaurantsPriceRange2 !== undefined) {
+            switch(parseInt(item.attributes.RestaurantsPriceRange2)) {
+                case 1:
+                    barChartData[0].count = barChartData[0].count + 1;
+                break;
+                case 2:
+                    barChartData[1].count = barChartData[1].count + 1;
+                break;
+                case 3:
+                    barChartData[2].count = barChartData[2].count + 1;
+                break;
+                case 4:
+                    barChartData[3].count = barChartData[3].count + 1;
+                break;
+                default:
+                    barChartData[4].count = barChartData[4].count + 1;
+            }
+        }
+        else {
+            barChartData[4].count = barChartData[4].count + 1;
+        }
+        
+    });
+    this.drawBarChart(barChartData, '#cuisine-chart-2');
+
+    console.log(response.data.validCategories.filter((item) => { this.state.selectedCuisines.indexOf(item['Name']) > -1 }));
+
+    let bubbleData = {
+        "children": response.data.validCategories
+    };
+    this.drawBubbleChart(bubbleData, "#cuisine-chart-1");
  }
 
   render() {
@@ -206,107 +255,20 @@ class CuisineCharts extends React.Component {
         url = url + '&cuisine=' + this.state.selectedCuisines.join(',');
         // URL EXAMPLE: /api/restaurants?state=AZ,ON&cuisine=Indian,Mexican&city=Scarborough,Mesa
         axios.get(url).then((response) => {
-            console.log(response.data.results);
-            let barChartData = [
-                {
-                    'count': 0,
-                    'priceRange': '$'
-                },
-                {
-                    'count': 0,
-                    'priceRange': '$$'
-                },
-                {
-                    'count': 0,
-                    'priceRange': '$$$'
-                },
-                {
-                    'count': 0,
-                    'priceRange': '$$$$'
-                },
-                {
-                    'count': 0,
-                    'priceRange': '?'
-                }
-            ];
-            response.data.results.map((item) => {
-                if (item.attributes && item.attributes.RestaurantsPriceRange2 !== undefined) {
-                    switch(parseInt(item.attributes.RestaurantsPriceRange2)) {
-                        case 1:
-                            barChartData[0].count = barChartData[0].count + 1;
-                        break;
-                        case 2:
-                            barChartData[1].count = barChartData[1].count + 1;
-                        break;
-                        case 3:
-                            barChartData[2].count = barChartData[2].count + 1;
-                        break;
-                        case 4:
-                            barChartData[3].count = barChartData[3].count + 1;
-                        break;
-                        default:
-                            barChartData[4].count = barChartData[4].count + 1;
-                    }
-                }
-                else {
-                    barChartData[4].count = barChartData[4].count + 1;
-                }
-                
-            });
-            this.drawBarChart(barChartData, '#cuisine-chart-2');
+            this.drawAllCharts(response);
         })
         .catch((error) => {
             console.log(error);
         })
         .finally(() => {
-            let bubbleData = {
-            "children": [{"Name":"Olives","Count":4319},
-                {"Name":"Tea","Count":4159},
-                {"Name":"Mashed Potatoes","Count":2583},
-                {"Name":"Boiled Potatoes","Count":2074},
-                {"Name":"Milk","Count":1894},
-                {"Name":"Chicken Salad","Count":1809},
-                {"Name":"Vanilla Ice Cream","Count":1713},
-                {"Name":"Cocoa","Count":1636},
-                {"Name":"Lettuce Salad","Count":1566},
-                {"Name":"Lobster Salad","Count":1511},
-                {"Name":"Chocolate","Count":1489},
-                {"Name":"Apple Pie","Count":1487},
-                {"Name":"Orange Juice","Count":1423},
-                {"Name":"American Cheese","Count":1372},
-                {"Name":"Green Peas","Count":1341},
-                {"Name":"Assorted Cakes","Count":1331},
-                {"Name":"French Fried Potatoes","Count":1328},
-                {"Name":"Potato Salad","Count":1306},
-                {"Name":"Baked Potatoes","Count":1293},
-                {"Name":"Roquefort","Count":1273},
-                {"Name":"Stewed Prunes","Count":1268}]
-        };
-            this.drawBubbleChart(bubbleData, "#cuisine-chart-1");
-
-            // let barData = [
-            //     {
-            //         'count': 500,
-            //         'priceRange': '$'
-            //     },
-            //     {
-            //         'count': 400,
-            //         'priceRange': '$$'
-            //     },
-            //     {
-            //         'count': 50,
-            //         'priceRange': '$$$'
-            //     },
-            //     {
-            //         'count': 10,
-            //         'priceRange': '$$$$'
-            //     }
-            // ];
-            // this.drawBarChart(barData, "#cuisine-chart-2");
+        
         });
     }
+    else {
+        $("#cuisine-chart-1, #cuisine-chart-2").empty();
+    }
     return (
-        <div className="container">
+        <div className="container p-0">
             <div className="row view-container">
                <div className="col-md state-filter chart-filters">
                     <StateDropdown onStateSelect={this.onStateSelect.bind(this)}/>
@@ -327,8 +289,8 @@ class CuisineCharts extends React.Component {
                  }
             </div>
             <div className="row">
-                <div className="col-md-6 w-100" id="cuisine-chart-1"></div>
-                <div className="col-md-6 w-100" id="cuisine-chart-2"></div>
+                <div className="col-md-6 w-100 p-3" id="cuisine-chart-1"></div>
+                <div className="col-md-6 w-100 p-3" id="cuisine-chart-2"></div>
             </div>
         </div>
     );
