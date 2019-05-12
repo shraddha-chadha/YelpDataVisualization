@@ -127,7 +127,7 @@ class StateDropdown extends React.Component {
                         </div>
                         <h6 className="p-2">Selected States</h6>
                         {selectedList}
-                        <hr></hr>
+                        <div class="dropdown-divider"></div>
                         {stateList}
                     </div>
                 </div>
