@@ -128,10 +128,23 @@ let clean_data_helpers = [getCategoryMap, getValidCategories];
 router.get('/restaurants',
     function(req, res, next)
     {
-        let city = req.query.city;
-        let cuisine = req.query.selectedCategories.split(',');
+        let state, city, cuisine, filter = [];
 
-        if(cuisine) {
+        //Defining the filters
+        if(req.query.state != undefined) {
+            state = req.query.state.split(',');
+            let temp = {'state': { $in: state }};
+            filter.push(temp);
+        }
+
+        if(req.query.city != undefined) {
+            city = req.query.city.split(',');
+            let temp = {'city': { $in: city }};
+            filter.push(temp);
+        }
+
+        if(req.query.cuisine != undefined) {
+            cuisine = req.query.cuisine.split(',');
             let regexExp = "^";
             let len = cuisine.length;
             for(let k=0; k < len; k++) {
@@ -140,8 +153,14 @@ router.get('/restaurants',
                     regexExp += '|^';
                 }
             }
+            let temp = {"categories": { "$regex": regexExp}};
+            filter.push(temp);
+        }
+        console.log(filter);
 
-            restaurants.find( {$and: [ {'city': city}, {"categories": { "$regex": regexExp}}]}, function (err, data) {
+        //Quering the database with the filters
+        if(filter.length !== 0) {
+            restaurants.find( {$and: filter}, function (err, data) {
                 if(err) {
                     console.log('Error finding restaurants',err);
                     res.send(err);
@@ -150,8 +169,9 @@ router.get('/restaurants',
                 next();
             });
         }
+        // Return all records since there is no filter
         else {
-            restaurants.find({ "city": city}, function(err, data) {
+            restaurants.find( function(err, data) {
                 if(err) {
                     console.log('Error finding restaurants',err);
                     res.send(err);
