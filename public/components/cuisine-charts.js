@@ -123,14 +123,34 @@ class CuisineCharts extends React.Component {
 
  onStateSelect(stateList) {
      this.setState({
-         selectedStates: stateList
+         selectedStates: []
      });
+     this.setState({
+         selectedStates: stateList,
+         selectedCities: [],
+         selectedCuisines: []
+     })
+     this.forceUpdate();
  }
 
  onCitySelect(cityList) {
      this.setState({
-        selectedCities: cityList
+        selectedCities: cityList,
+        selectedCuisines: []
      });
+ }
+
+ getCityDropdown(state) {
+     if (state) {
+         return (
+            <div className="col-md city-filter chart-filters">
+                           <CityDropdown stateName={this.state.selectedStates[0]} onCitySelect={this.onCitySelect.bind(this)}/>
+                        </div>
+         );
+     }
+     else {
+         return null;
+     }
  }
 
   render() {
@@ -151,6 +171,7 @@ class CuisineCharts extends React.Component {
                <div className="col-md state-filter chart-filters">
                     <StateDropdown onStateSelect={this.onStateSelect.bind(this)}/>
                </div>
+
                 {this.state.selectedStates.length ? (
                         <div className="col-md city-filter chart-filters">
                            <CityDropdown stateName={this.state.selectedStates[0]} onCitySelect={this.onCitySelect.bind(this)}/>

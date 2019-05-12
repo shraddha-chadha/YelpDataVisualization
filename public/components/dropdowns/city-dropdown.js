@@ -14,27 +14,50 @@ class CityDropdown extends React.Component {
         };
   }
 
+  componentWillReceiveProps(nextProps) {
+      if (nextProps.stateName == this.props.stateName) { // nothing to change
+          return;
+      }
+      axios.get('/api/city?state=' + nextProps.stateName)
+        .then((response) => {
+            this.setState({
+                cities: response.data,
+                searchResults: response.data,
+                isLoading: false
+            });
+        })
+        .catch((error) => {
+            // handle error
+            console.log(error);
+        })
+        .finally(() => {
+            this.setState({
+                isLoading: false
+            });
+        });
+  }
+
   /**
     Initialize component hook
    */
   componentDidMount() {
-    // axios.get('/api/city?state=' + this.props.stateName)
-    //     .then((response) => {
+    axios.get('/api/city?state=' + this.props.stateName)
+        .then((response) => {
             this.setState({
-                cities: ['Mumbai', 'BG'],
-                searchResults: ['Mumbai', 'BG'],
+                cities: response.data,
+                searchResults: response.data,
                 isLoading: false
             });
-    //     })
-    //     .catch((error) => {
-    //         // handle error
-    //         console.log(error);
-    //     })
-    //     .finally(() => {
-    //         this.setState({
-    //             isLoading: false
-    //         });
-    //     });
+        })
+        .catch((error) => {
+            // handle error
+            console.log(error);
+        })
+        .finally(() => {
+            this.setState({
+                isLoading: false
+            });
+        });
   }
 
   /**
