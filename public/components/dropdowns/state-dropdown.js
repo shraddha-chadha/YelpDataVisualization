@@ -1,51 +1,38 @@
 'use strict';
 const e = React.createElement;
-
 class StateDropdown extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-        isLoading: false,
+        isLoading: true,
         isOpen: false,
         searchText: '',
         selectedStates: [],
         searchResults: [],
-        states: [
-                "AZ",
-                "NC",
-                "ON",
-                "PA",
-                "NV",
-                "AB",
-                "OH",
-                "QC",
-                "WI",
-                "IL",
-                "NY",
-                "SC",
-                "NM",
-                "VA",
-                "NE",
-                "CA",
-                "WA",
-                "XWY",
-                "CON",
-                "TX",
-                "BC",
-                "VT",
-                "XGM",
-                "AR",
-                "FL",
-                "AL"
-            ]
+        states: []
         };
   }
 
   componentDidMount() {
-      this.setState({
-          searchResults: this.state.states
-      });
+      // Make a request for a user with a given ID
+    axios.get('/api/state')
+        .then((response) => {
+            console.log(response);
+            this.setState({
+                states: response.data,
+                searchResults: response.data
+            })
+        })
+        .catch((error) => {
+            // handle error
+            console.log(error);
+        })
+        .finally(() => {
+            this.setState({
+                isLoading: false
+            })
+        });
   }
 
   /**
@@ -90,32 +77,17 @@ class StateDropdown extends React.Component {
 
       this.state.searchText = '';
       if (indexOfState > -1) {
-            this.state.selectedStates.splice(indexOfState, 1);
-            console.log(this.state.selectedStates);
             this.setState({
                 selectedStates: this.state.selectedStates.splice(indexOfState, 1)
             });
       }
       else {
-            this.state.selectedStates.push(stateValue)
+          this.state.selectedStates.push(stateValue);
             this.setState({
                 selectedStates: this.state.selectedStates
             });
       }
   }
-
-  focusInCurrentTarget ({ relatedTarget, currentTarget }) {
-    if (relatedTarget === null) return false;
-
-    var node = relatedTarget.parentNode;
-
-    while (node !== null) {
-        if (node === currentTarget) return true;
-        node = node.parentNode;
-    }
-
-    return false;
-    }
 
   /**
     React's function to render the DOM
