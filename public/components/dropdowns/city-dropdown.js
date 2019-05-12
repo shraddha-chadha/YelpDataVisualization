@@ -23,6 +23,7 @@ class CityDropdown extends React.Component {
             this.setState({
                 cities: response.data,
                 searchResults: response.data,
+                selectedCities: [],
                 isLoading: false
             });
         })

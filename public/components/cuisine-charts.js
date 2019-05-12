@@ -123,14 +123,10 @@ class CuisineCharts extends React.Component {
 
  onStateSelect(stateList) {
      this.setState({
-         selectedStates: []
-     });
-     this.setState({
          selectedStates: stateList,
          selectedCities: [],
          selectedCuisines: []
-     })
-     this.forceUpdate();
+     });
  }
 
  onCitySelect(cityList) {
@@ -154,6 +150,7 @@ class CuisineCharts extends React.Component {
  }
 
   render() {
+    // when all filters are set
     if (this.state.selectedCuisines.length && this.state.selectedStates.length && this.state.selectedCities.length) {
         axios.get('/api/restaurants').then((response) => {
             this.drawChart(response.data);
