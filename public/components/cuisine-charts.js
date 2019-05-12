@@ -12,44 +12,90 @@ class CuisineCharts extends React.Component {
     }
   }
 
-  drawChart() {
-      $("#cuisine-chart").empty();
-      let dataset = {
-            "children": [{"Name":"Olives","Count":4319},
-                {"Name":"Tea","Count":4159},
-                {"Name":"Mashed Potatoes","Count":2583},
-                {"Name":"Boiled Potatoes","Count":2074},
-                {"Name":"Milk","Count":1894},
-                {"Name":"Chicken Salad","Count":1809},
-                {"Name":"Vanilla Ice Cream","Count":1713},
-                {"Name":"Cocoa","Count":1636},
-                {"Name":"Lettuce Salad","Count":1566},
-                {"Name":"Lobster Salad","Count":1511},
-                {"Name":"Chocolate","Count":1489},
-                {"Name":"Apple Pie","Count":1487},
-                {"Name":"Orange Juice","Count":1423},
-                {"Name":"American Cheese","Count":1372},
-                {"Name":"Green Peas","Count":1341},
-                {"Name":"Assorted Cakes","Count":1331},
-                {"Name":"French Fried Potatoes","Count":1328},
-                {"Name":"Potato Salad","Count":1306},
-                {"Name":"Baked Potatoes","Count":1293},
-                {"Name":"Roquefort","Count":1273},
-                {"Name":"Stewed Prunes","Count":1268}]
-        };
+  drawBarChart(data, selector) {
+        $(selector).empty();
+        // set the dimensions and margins of the graph
+        var margin = {top: 20, right: 20, bottom: 30, left: 40},
+            width = $(selector).width() - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
 
+        // set the ranges
+        var x = d3.scaleBand()
+                .range([0, width])
+                .padding(0.1);
+        var y = d3.scaleLinear()
+                .range([height, 0]);
+
+        // append the svg object to the body of the page
+        // append a 'group' element to 'svg'
+        // moves the 'group' element to the top left margin
+        var svg = d3.select(selector).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        // get the data
+
+        // format the data
+        data.forEach(function(d) {
+            d.count = +d.count;
+        });
+
+        // Scale the range of the data in the domains
+        x.domain(data.map(function(d) { return d.priceRange; }));
+        y.domain([0, d3.max(data, function(d) { return d.count; })]);
+
+        // append the rectangles for the bar chart
+        svg.selectAll(".bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .transition()
+            .duration(3000)
+            .attr("x", function(d) { return x(d.priceRange); })
+            .attr("width", x.bandwidth())
+            .attr("y", function(d) { return y(d.count); })
+            .attr("height", function(d) { return height - y(d.count); });
+
+        // add the x Axis
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        // add the y Axis
+        svg.append("g")
+            .call(d3.axisLeft(y));
+  }
+
+  drawBubbleChart(data, selector) {
+      $(selector).empty();
+      let dataset = data;
+        let margin = {
+            top: 0,
+            left: 10,
+            right: 10,
+            bottom: 0
+        };
         var diameter = 600;
         var color = d3.scaleOrdinal(d3.schemeCategory20);
+        let width = $(selector).width() - margin.left -margin.right;
+        let height = 600 - margin.top - margin.bottom;
 
         var bubble = d3.pack(dataset)
             .size([diameter, diameter])
             .padding(1.5);
 
-        var svg = d3.select("#cuisine-chart")
+        var svg = d3.select(selector)
             .append("svg")
             .attr("width", "100%")
-            .attr("height", 600)
+            .attr("height", height)
             .attr("class", "bubble");
+
+            var zoom = d3.zoom().on("zoom", function () {
+                        svg.attr("transform", d3.event.transform)
+                    });
 
         var nodes = d3.hierarchy(dataset)
             .sum(function(d) { return d.Count; });
@@ -112,6 +158,8 @@ class CuisineCharts extends React.Component {
         d3.select(self.frameElement)
             .style("height", diameter + "px");
 
+            svg.call(zoom);
+
 
   }
 
@@ -152,14 +200,61 @@ class CuisineCharts extends React.Component {
   render() {
     // when all filters are set
     if (this.state.selectedCuisines.length && this.state.selectedStates.length && this.state.selectedCities.length) {
-        axios.get('/api/restaurants').then((response) => {
-            this.drawChart(response.data);
+        let url = '/api/restaurants/';
+        url = url + '?state=' + this.state.selectedStates.join(',');
+        url = url + '&city=' + this.state.selectedCities.join(',');
+        url = url + '&cuisine=' + this.state.selectedCities.join(',');
+        // URL EXAMPLE: /api/restaurants?state=AZ,ON&cuisine=Indian,Mexican&city=Scarborough,Mesa
+        axios.get(url).then((response) => {
+            alert(response.data);
         })
         .catch((error) => {
             console.log(error);
         })
         .finally(() => {
-
+            let bubbleData = {
+            "children": [{"Name":"Olives","Count":4319},
+                {"Name":"Tea","Count":4159},
+                {"Name":"Mashed Potatoes","Count":2583},
+                {"Name":"Boiled Potatoes","Count":2074},
+                {"Name":"Milk","Count":1894},
+                {"Name":"Chicken Salad","Count":1809},
+                {"Name":"Vanilla Ice Cream","Count":1713},
+                {"Name":"Cocoa","Count":1636},
+                {"Name":"Lettuce Salad","Count":1566},
+                {"Name":"Lobster Salad","Count":1511},
+                {"Name":"Chocolate","Count":1489},
+                {"Name":"Apple Pie","Count":1487},
+                {"Name":"Orange Juice","Count":1423},
+                {"Name":"American Cheese","Count":1372},
+                {"Name":"Green Peas","Count":1341},
+                {"Name":"Assorted Cakes","Count":1331},
+                {"Name":"French Fried Potatoes","Count":1328},
+                {"Name":"Potato Salad","Count":1306},
+                {"Name":"Baked Potatoes","Count":1293},
+                {"Name":"Roquefort","Count":1273},
+                {"Name":"Stewed Prunes","Count":1268}]
+        };
+            this.drawBubbleChart(bubbleData, "#cuisine-chart-1");
+            let barData = [
+                {
+                    'count': 500,
+                    'priceRange': '$'
+                },
+                {
+                    'count': 400,
+                    'priceRange': '$$'
+                },
+                {
+                    'count': 50,
+                    'priceRange': '$$$'
+                },
+                {
+                    'count': 10,
+                    'priceRange': '$$$$'
+                }
+            ];
+            this.drawBarChart(barData, "#cuisine-chart-2");
         });
     }
     return (
@@ -182,11 +277,10 @@ class CuisineCharts extends React.Component {
                         </div>
                     ): (null)
                  }
-
-
             </div>
             <div className="row">
-                <div className="col-md w-100" id="cuisine-chart"></div>
+                <div className="col-md-6 w-100" id="cuisine-chart-1"></div>
+                <div className="col-md-6 w-100" id="cuisine-chart-2"></div>
             </div>
         </div>
     );
