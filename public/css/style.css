@@ -193,3 +193,11 @@ header.sticky {
 [data-view] {
     min-height: 100%;
 }
+
+.dropdown-menu {
+    z-index: 100;
+    max-height: 300px;
+    overflow-y: scroll;
+}
+
+.view-container > div {z-index: 11}

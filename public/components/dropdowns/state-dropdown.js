@@ -14,15 +14,16 @@ class StateDropdown extends React.Component {
         };
   }
 
+  /**
+    Initialize component hook
+   */
   componentDidMount() {
-      // Make a request for a user with a given ID
     axios.get('/api/state')
         .then((response) => {
-            console.log(response);
             this.setState({
                 states: response.data,
                 searchResults: response.data
-            })
+            });
         })
         .catch((error) => {
             // handle error
@@ -31,7 +32,7 @@ class StateDropdown extends React.Component {
         .finally(() => {
             this.setState({
                 isLoading: false
-            })
+            });
         });
   }
 
@@ -39,7 +40,12 @@ class StateDropdown extends React.Component {
     Function that returns the label of the dropdown
    */
   getDropdownSelectionLabel() {
-     return this.state.selectedStates.join(',') || 'Select States';
+      if (this.state.isLoading) { // wait for API to complete
+          return 'Loading...'
+      }
+      else {
+          return this.state.selectedStates.join(',') || 'Select States';
+      }
   }
 
   /**
