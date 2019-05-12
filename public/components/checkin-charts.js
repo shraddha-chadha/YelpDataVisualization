@@ -76,20 +76,33 @@ class CheckingCharts extends React.Component {
     })
   }
 
+  onCitySelect(cityList) {
+      this.setState({
+          selectedCities: cityList
+      });
+  }
+
+  onStateSelect(stateList) {
+      this.setState({
+          selectedStates: stateList
+      });
+  }
+
   render() {
     return (
-        <div className="row view-container">
-            <div className="col-md state-dropdown">
-                <label>Select State</label>
-                    <select className="selectpicker" placeholder="Select State">
-                        {this.getStates()}
-                    </select>
+        <div className="container p-0">
+            <div className="row view-container">
+                <div className="col-md state-filter chart-filters">
+                    <StateDropdown onStateSelect={this.onStateSelect.bind(this)}/>
+                </div>
+                {this.state.selectedStates.length ? (
+                    <div className="col-md cuisine-filter chart-filters">
+                        <CityDropdown stateName={this.state.selectedStates[0]} onCitySelect={this.onCitySelect.bind(this)}/>
+                    </div>
+                ) : (null)}
             </div>
-            <div className="col-md state-dropdown">
-                <label>Select State</label>
-                <select className="selectpicker" placeholder="Select State">
-                        {this.getStates()}
-                </select>
+            <div className="row">
+                <div className="col-md w-100" id="ratings-chart"></div>
             </div>
         </div>
     );
