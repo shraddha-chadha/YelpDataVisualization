@@ -52,10 +52,10 @@ class CuisineCharts extends React.Component {
             .data(data)
             .enter().append("rect")
             .attr("class", "bar")
-            .transition()
-            .duration(3000)
             .attr("x", function(d) { return x(d.priceRange); })
             .attr("width", x.bandwidth())
+            .transition()
+            .duration(2000)
             .attr("y", function(d) { return y(d.count); })
             .attr("height", function(d) { return height - y(d.count); });
 
@@ -200,13 +200,60 @@ class CuisineCharts extends React.Component {
   render() {
     // when all filters are set
     if (this.state.selectedCuisines.length && this.state.selectedStates.length && this.state.selectedCities.length) {
-        let url = '/api/restaurants/';
+        let url = '/api/restaurants';
         url = url + '?state=' + this.state.selectedStates.join(',');
         url = url + '&city=' + this.state.selectedCities.join(',');
-        url = url + '&cuisine=' + this.state.selectedCities.join(',');
+        url = url + '&cuisine=' + this.state.selectedCuisines.join(',');
         // URL EXAMPLE: /api/restaurants?state=AZ,ON&cuisine=Indian,Mexican&city=Scarborough,Mesa
         axios.get(url).then((response) => {
-            alert(response.data);
+            console.log(response.data.results);
+            let barChartData = [
+                {
+                    'count': 0,
+                    'priceRange': '$'
+                },
+                {
+                    'count': 0,
+                    'priceRange': '$$'
+                },
+                {
+                    'count': 0,
+                    'priceRange': '$$$'
+                },
+                {
+                    'count': 0,
+                    'priceRange': '$$$$'
+                },
+                {
+                    'count': 0,
+                    'priceRange': '?'
+                }
+            ];
+            response.data.results.map((item) => {
+                if (item.attributes && item.attributes.RestaurantsPriceRange2 !== undefined) {
+                    switch(parseInt(item.attributes.RestaurantsPriceRange2)) {
+                        case 1:
+                            barChartData[0].count = barChartData[0].count + 1;
+                        break;
+                        case 2:
+                            barChartData[1].count = barChartData[1].count + 1;
+                        break;
+                        case 3:
+                            barChartData[2].count = barChartData[2].count + 1;
+                        break;
+                        case 4:
+                            barChartData[3].count = barChartData[3].count + 1;
+                        break;
+                        default:
+                            barChartData[4].count = barChartData[4].count + 1;
+                    }
+                }
+                else {
+                    barChartData[4].count = barChartData[4].count + 1;
+                }
+                
+            });
+            this.drawBarChart(barChartData, '#cuisine-chart-2');
         })
         .catch((error) => {
             console.log(error);
@@ -236,25 +283,26 @@ class CuisineCharts extends React.Component {
                 {"Name":"Stewed Prunes","Count":1268}]
         };
             this.drawBubbleChart(bubbleData, "#cuisine-chart-1");
-            let barData = [
-                {
-                    'count': 500,
-                    'priceRange': '$'
-                },
-                {
-                    'count': 400,
-                    'priceRange': '$$'
-                },
-                {
-                    'count': 50,
-                    'priceRange': '$$$'
-                },
-                {
-                    'count': 10,
-                    'priceRange': '$$$$'
-                }
-            ];
-            this.drawBarChart(barData, "#cuisine-chart-2");
+
+            // let barData = [
+            //     {
+            //         'count': 500,
+            //         'priceRange': '$'
+            //     },
+            //     {
+            //         'count': 400,
+            //         'priceRange': '$$'
+            //     },
+            //     {
+            //         'count': 50,
+            //         'priceRange': '$$$'
+            //     },
+            //     {
+            //         'count': 10,
+            //         'priceRange': '$$$$'
+            //     }
+            // ];
+            // this.drawBarChart(barData, "#cuisine-chart-2");
         });
     }
     return (
