@@ -88,10 +88,20 @@ class StateDropdown extends React.Component {
             });
       }
       else {
-          this.state.selectedStates.push(stateValue);
-            this.setState({
-                selectedStates: this.state.selectedStates
-            });
+          // for single select, the selectedCuisines can have only one entry
+            if (!this.props.isMultiSelect && this.state.selectedStates.length) {
+                this.state.selectedStates.pop();
+                this.state.selectedStates.push(stateValue);
+                this.setState({
+                    selectedStates: this.state.selectedStates
+                });
+            }
+            else { // IF MULTI SELECT, array length can be more that 1
+                this.state.selectedStates.push(stateValue);
+                this.setState({
+                    selectedStates: this.state.selectedStates
+                });
+            }
       }
       this.props.onStateSelect(this.state.selectedStates);
   }
