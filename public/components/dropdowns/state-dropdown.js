@@ -48,27 +48,11 @@ class StateDropdown extends React.Component {
       });
   }
 
- /**
-  * Function to add state to selected state array
-  */
-  selectState(state) {
-        let selectedStates = this.state.selectedStates;
-        selectedStates.push(state);
-        this.setState({
-            selectedStates: selectedStates
-        });
-  }
-
   /**
     Function that returns the label of the dropdown
    */
   getDropdownSelectionLabel() {
-        if (this.state.selectedStates.length) {
-            return this.state.selectedStates.split(',');
-        }
-        else {
-            return 'Select State';
-        }
+     return this.state.selectedStates.join(',') || 'Select States';
   }
 
   /**
@@ -88,7 +72,6 @@ class StateDropdown extends React.Component {
         let updatedList = this.state.states.filter(function(item) {
             var state = item.toLowerCase(),
                 filter = event.target.value.toLowerCase();
-                console.log("state", state + ' filter: ' + filter + ' result: ' + state.includes(filter));
             return state.includes(filter);
         });
         console.log("searchResults: ", updatedList);
@@ -102,45 +85,79 @@ class StateDropdown extends React.Component {
     Function to add or remove state from the selected states array
    */
   addOrRemoveState(event) {
-      var stateValue = event.target.value,
+      var stateValue = event.target.textContent,
            indexOfState = this.state.selectedStates.indexOf(stateValue);
+
+      this.state.searchText = '';
       if (indexOfState > -1) {
+            this.state.selectedStates.splice(indexOfState, 1);
+            console.log(this.state.selectedStates);
             this.setState({
                 selectedStates: this.state.selectedStates.splice(indexOfState, 1)
             });
       }
       else {
+            this.state.selectedStates.push(stateValue)
             this.setState({
-                selectedStates: this.state.selectedStates.push(stateValue)
+                selectedStates: this.state.selectedStates
             });
       }
   }
+
+  focusInCurrentTarget ({ relatedTarget, currentTarget }) {
+    if (relatedTarget === null) return false;
+
+    var node = relatedTarget.parentNode;
+
+    while (node !== null) {
+        if (node === currentTarget) return true;
+        node = node.parentNode;
+    }
+
+    return false;
+    }
 
   /**
     React's function to render the DOM
    */
   render() {
-       let stateList;
+       let stateList, selectedList;
         stateList = this.state.searchResults.map((state) => {
+            if (this.state.selectedStates.indexOf(state) < 0) {
                 return (
-                    <li key={state}
-                        onClick={this.addOrRemoveState.bind(this)}
-                        className={this.state.selectedStates.indexOf(state.toUpperCase()) > -1 ? 'active' : ''}>
-                            <span>{state}</span>
-                    </li>
+                    <div key={state} onClick={this.addOrRemoveState.bind(this)} className="dropdown-item">
+                            {state}
+                    </div>
+                );
+            }
+            else {
+                return null;
+            }
+        });
+
+        selectedList = this.state.selectedStates.map((state) => {
+            return (
+                    <div key={state} onClick={this.addOrRemoveState.bind(this)} className="active dropdown-item">
+                            {state}
+                    </div>
                 );
         });
 
         // HTML
         return (
-                <div className="state-dropdown react-dropdown" className={this.state.isOpen ? 'active dropdown' : 'dropdown'}>
-                    <div className="dropdown-label" onClick={this.toggleDropdown.bind(this)}>
-                        <span>{this.getDropdownSelectionLabel}</span>
-                        <input type="text" placeholder="Select State" onChange={this.searchList.bind(this)}/>
-                    </div>
-                    <ul placeholder="Select State" className="dropdown">
+                <div className="state-dropdown react-dropdown position-relative dropdown" className={this.state.isOpen ? 'active dropdown' : 'dropdown'}>
+                    <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {this.getDropdownSelectionLabel()}
+                    </button>
+                    <div className="dropdown-menu position-absolute w-100" aria-labelledby="dropdownMenuButton">
+                        <div className="p-2">
+                            <input type="text" placeholder="Search States" className="form-control" onChange={this.searchList.bind(this)}/>
+                        </div>
+                        <h6 className="p-2">Selected States</h6>
+                        {selectedList}
+                        <hr></hr>
                         {stateList}
-                    </ul>
+                    </div>
                 </div>
         );
   }

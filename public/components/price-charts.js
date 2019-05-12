@@ -72,25 +72,14 @@ class PriceCharts extends React.Component {
 
   getStates() {
     return this.state.states.map(function (state) {
-        return <option key={state}>{state}</option>
+        return (<option key={state}>{state}</option>);
     })
   }
 
   render() {
     return (
         <div className="row view-container">
-            <div className="col-md state-dropdown">
-                <label>Select State</label>
-                    <select className="selectpicker" placeholder="Select State">
-                        {this.getStates()}
-                    </select>
-            </div>
-            <div className="col-md state-dropdown">
-                <label>Select State</label>
-                <select className="selectpicker" placeholder="Select State">
-                        {this.getStates()}
-                </select>
-            </div>
+            SYATE
         </div>
     );
   }
