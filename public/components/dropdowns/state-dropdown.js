@@ -93,6 +93,7 @@ class StateDropdown extends React.Component {
                 selectedStates: this.state.selectedStates
             });
       }
+      this.props.onStateSelect(this.state.selectedStates);
   }
 
   /**

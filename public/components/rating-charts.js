@@ -6,12 +6,13 @@ class RatingCharts extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        selectedStates: [
-      ]
+        selectedCuisines: [],
+        selectedStates: []
     }
   }
 
   drawChart() {
+      $("#ratings-chart").empty();
       let dataset = {
             "children": [{"Name":"Olives","Count":4319},
                 {"Name":"Tea","Count":4159},
@@ -113,21 +114,44 @@ class RatingCharts extends React.Component {
 
   }
 
-  componentDidMount() {
-      this.drawChart();
-  }
+ onCuisineSelect(cuisineList) {
+     this.setState({
+         selectedCuisines: cuisineList
+     });
+ }
+
+ onStateSelect(stateList) {
+     this.setState({
+         selectedStates: stateList
+     });
+ }
+
+
 
   render() {
-    let cities = ['Mumbai', 'Bangalore'];
+    if (this.state.selectedCuisines.length && this.state.selectedStates.length) {
+        axios.get('/api/restaurants').then((response) => {
+            this.drawChart(response.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+        .finally(() => {
+
+        });
+    }
     return (
         <div className="container">
             <div className="row view-container">
-                <div className="col-md cuisine-filter">
-                        <CuisineDropdown/>
+                <div className="col-md cuisine-filter chart-filters">
+                        <CuisineDropdown onCuisineSelect={this.onCuisineSelect.bind(this)}/>
                 </div>
-                <div className="col-md state-filter">
-                        <StateDropdown/>
-                </div>
+                {this.state.selectedCuisines.length ? (
+                        <div className="col-md state-filter chart-filters">
+                           <StateDropdown onStateSelect={this.onStateSelect.bind(this)}/>
+                        </div>
+                    ): (null)
+                 }
 
             </div>
             <div className="row">

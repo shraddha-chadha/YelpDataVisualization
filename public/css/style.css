@@ -201,3 +201,6 @@ header.sticky {
 }
 
 .view-container > div {z-index: 11}
+.chart-filters {
+    transition: width 0.3s ease-in;
+}
