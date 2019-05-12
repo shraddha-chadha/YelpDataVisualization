@@ -17,7 +17,7 @@ class RatingCharts extends React.Component {
 
   getStates() {
     return this.state.states.map(function (state) {
-        return <option value="{state.toLowerCase()}">{state}</option>
+        return <option key={state}>{state}</option>
     });
   }
 
@@ -33,7 +33,7 @@ class RatingCharts extends React.Component {
                     <StateDropdown/>
             </div>
             <div className="col-md state-dropdown">
-                    <CityDropdown cities={cities}/>
+                SELECT STATE
             </div>
         </div>
     );

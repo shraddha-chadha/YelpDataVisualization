@@ -15,7 +15,7 @@ class CityDropdown extends React.Component {
   getCities() {
       console.log(this.props);
     return this.props.cities.map(function (city) {
-        return (<option>{city}</option>)
+        return (<option key={city}>{city}</option>)
     });
   }
 

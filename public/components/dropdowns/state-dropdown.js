@@ -6,6 +6,7 @@ class StateDropdown extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+        isLoading: false,
         isOpen: false,
         searchText: '',
         selectedStates: [],
@@ -84,9 +85,11 @@ class StateDropdown extends React.Component {
     Function to search
    */
   searchList(event) {
-        let updatedList = this.state.states;
-        updatedList.filter(function(item) {
-            return item.toLowerCase().search(event.target.value.toLowerCase()) !== -1;
+        let updatedList = this.state.states.filter(function(item) {
+            var state = item.toLowerCase(),
+                filter = event.target.value.toLowerCase();
+                console.log("state", state + ' filter: ' + filter + ' result: ' + state.includes(filter));
+            return state.includes(filter);
         });
         console.log("searchResults: ", updatedList);
         this.setState({
@@ -94,9 +97,9 @@ class StateDropdown extends React.Component {
             searchResults: updatedList
         });
   }
-  
+
   /**
-    Function to add or remove state from the selected states array 
+    Function to add or remove state from the selected states array
    */
   addOrRemoveState(event) {
       var stateValue = event.target.value,
@@ -117,49 +120,23 @@ class StateDropdown extends React.Component {
     React's function to render the DOM
    */
   render() {
-       let self = this,
-           stateList;
-
-       // is seach text is typed, use the searchResults list in the dropdown, otherwise,
-       // use all the states
-    //    if (this.state.searchText.length) {
-    //         // state list rendered below
-    //         stateList = this.state.searchResults.map(function (state) {
-    //             return (
-    //                 <li 
-    //                     key={state} 
-    //                     value={state}
-    //                     onClick={self.addOrRemoveState.bind(self)}
-    //                     className={self.state.selectedStates.indexOf(state) > -1 ? 'active' : ''}>
-    //                         {state}
-    //                 </li>
-    //             );
-    //         });
-    //    }
-    //    else {
-    //        // state list rendered below
-            
-    //    }
-
-       stateList = this.state.searchResults.map(function (state) {
+       let stateList;
+        stateList = this.state.searchResults.map((state) => {
                 return (
-                    <li 
-                        key={state} 
-                        value={state}
-                        onClick={self.addOrRemoveState.bind(self)}
-                        className={self.state.selectedStates.indexOf(state) > -1 ? 'active' : ''}>
-                            {state}
+                    <li key={state}
+                        onClick={this.addOrRemoveState.bind(this)}
+                        className={this.state.selectedStates.indexOf(state.toUpperCase()) > -1 ? 'active' : ''}>
+                            <span>{state}</span>
                     </li>
                 );
-            });
-        
+        });
 
-        // HTML 
+        // HTML
         return (
                 <div className="state-dropdown react-dropdown" className={this.state.isOpen ? 'active dropdown' : 'dropdown'}>
                     <div className="dropdown-label" onClick={this.toggleDropdown.bind(this)}>
                         <span>{this.getDropdownSelectionLabel}</span>
-                        <input type="text" placeholder={this.state.searchText} value={this.state.searchText} onChange={this.searchList}/>
+                        <input type="text" placeholder="Select State" onChange={this.searchList.bind(this)}/>
                     </div>
                     <ul placeholder="Select State" className="dropdown">
                         {stateList}

@@ -72,7 +72,7 @@ class FeatureCharts extends React.Component {
 
   getStates() {
     return this.state.states.map(function (state) {
-        return <option value="{state.toLowerCase()}">{state}</option>
+        return <option key={state}>{state}</option>
     })
   }
 
