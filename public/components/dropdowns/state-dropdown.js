@@ -118,7 +118,7 @@ class StateDropdown extends React.Component {
         // HTML
         return (
                 <div className="state-dropdown react-dropdown position-relative dropdown" className={this.state.isOpen ? 'active dropdown' : 'dropdown'}>
-                    <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button className="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {this.getDropdownSelectionLabel()}
                     </button>
                     <div className="dropdown-menu position-absolute w-100" aria-labelledby="dropdownMenuButton">

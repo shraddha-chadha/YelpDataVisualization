@@ -29,11 +29,11 @@ class RatingCharts extends React.Component {
     let cities = ['Mumbai', 'Bangalore'];
     return (
         <div className="row view-container">
-            <div className="col-md state-dropdown">
-                    <StateDropdown/>
+            <div className="col-md cuisine-filter">
+                    <CuisineDropdown/>
             </div>
-            <div className="col-md state-dropdown">
-                SELECT STATE
+            <div className="col-md state-filter">
+                    <StateDropdown/>
             </div>
         </div>
     );
