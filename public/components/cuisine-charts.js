@@ -237,9 +237,6 @@ class CuisineCharts extends React.Component {
         
     });
     this.drawBarChart(barChartData, '#cuisine-chart-2');
-
-    console.log(response.data.validCategories.filter((item) => { this.state.selectedCuisines.indexOf(item['Name']) > -1 }));
-
     let bubbleData = {
         "children": response.data.validCategories.filter((item) => { 
             return this.state.selectedCuisines.indexOf(item.Name) > -1;

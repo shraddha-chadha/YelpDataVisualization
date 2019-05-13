@@ -126,9 +126,7 @@ class RatingCharts extends React.Component {
      });
  }
 
-
-
-  render() {
+render() {
     if (this.state.selectedCuisines.length && this.state.selectedStates.length) {
         axios.get('/api/restaurants').then((response) => {
             this.drawChart(response.data);
