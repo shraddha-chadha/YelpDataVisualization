@@ -27,7 +27,7 @@ class PriceCharts extends React.Component {
     console.log('max', max);
     var container = d3.select(selector),
         width = 500,
-        height = 300,
+        height = 500,
         margin = {top: 30, right: 20, bottom: 30, left: 50},
         barPadding = .2,
         axisTicks = {qty: 5, outerSize: 0};
@@ -47,7 +47,7 @@ class PriceCharts extends React.Component {
         var yAxis = d3.axisLeft(yScale).ticks(axisTicks.qty).tickSizeOuter(axisTicks.outerSize);
 
         xScale0.domain(models.map(d => d.model_name));
-        xScale1.domain(['field1', 'field2']).range([0, xScale0.bandwidth()]);
+        xScale1.domain(['field1', 'field2', 'field3', 'field4', 'field5']).range([0, xScale0.bandwidth()]);
         yScale.domain([0, max]);
 
         var model_name = svg.selectAll(".model_name")
@@ -66,6 +66,8 @@ class PriceCharts extends React.Component {
         .attr("x", d => xScale1('field1'))
         .attr("y", d => yScale(d.field1))
         .attr("width", xScale1.bandwidth())
+        .transition()
+        .duration(2000)
         .attr("height", d => {
             return height - margin.top - margin.bottom - yScale(d.field1)
         });
@@ -80,6 +82,8 @@ class PriceCharts extends React.Component {
         .attr("x", d => xScale1('field2'))
         .attr("y", d => yScale(d.field2))
         .attr("width", xScale1.bandwidth())
+        .transition()
+        .duration(2000)
         .attr("height", d => {
             return height - margin.top - margin.bottom - yScale(d.field2)
         });
@@ -90,7 +94,9 @@ class PriceCharts extends React.Component {
         .enter()
         .append("rect")
         .attr("class", "bar field3")
-        .style("fill","red")
+        .transition()
+        .duration(2000)
+        .style("fill","green")
         .attr("x", d => xScale1('field3'))
         .attr("y", d => yScale(d.field3))
         .attr("width", xScale1.bandwidth())
@@ -104,7 +110,9 @@ class PriceCharts extends React.Component {
         .enter()
         .append("rect")
         .attr("class", "bar field2")
-        .style("fill","red")
+        .transition()
+        .duration(2000)
+        .style("fill","yellow")
         .attr("x", d => xScale1('field4'))
         .attr("y", d => yScale(d.field4))
         .attr("width", xScale1.bandwidth())
@@ -118,7 +126,9 @@ class PriceCharts extends React.Component {
         .enter()
         .append("rect")
         .attr("class", "bar field5")
-        .style("fill","red")
+        .transition()
+        .duration(2000)
+        .style("fill","grey")
         .attr("x", d => xScale1('field5'))
         .attr("y", d => yScale(d.field5))
         .attr("width", xScale1.bandwidth())
