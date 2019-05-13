@@ -62,7 +62,7 @@ class PriceCharts extends React.Component {
         .enter()
         .append("rect")
         .attr("class", "bar field1")
-        .style("fill","blue")
+        .style("fill","#0984e3")
         .attr("x", d => xScale1('field1'))
         .attr("y", d => yScale(d.field1))
         .attr("width", xScale1.bandwidth())
@@ -71,14 +71,14 @@ class PriceCharts extends React.Component {
         .attr("height", d => {
             return height - margin.top - margin.bottom - yScale(d.field1)
         });
-        
+
         /* Add field2 bars */
         model_name.selectAll(".bar.field2")
         .data(d => [d])
         .enter()
         .append("rect")
         .attr("class", "bar field2")
-        .style("fill","red")
+        .style("fill","#d63031")
         .attr("x", d => xScale1('field2'))
         .attr("y", d => yScale(d.field2))
         .attr("width", xScale1.bandwidth())
@@ -96,7 +96,7 @@ class PriceCharts extends React.Component {
         .attr("class", "bar field3")
         .transition()
         .duration(2000)
-        .style("fill","green")
+        .style("fill","#00b894")
         .attr("x", d => xScale1('field3'))
         .attr("y", d => yScale(d.field3))
         .attr("width", xScale1.bandwidth())
@@ -112,7 +112,7 @@ class PriceCharts extends React.Component {
         .attr("class", "bar field2")
         .transition()
         .duration(2000)
-        .style("fill","yellow")
+        .style("fill","#e17055")
         .attr("x", d => xScale1('field4'))
         .attr("y", d => yScale(d.field4))
         .attr("width", xScale1.bandwidth())
@@ -135,7 +135,7 @@ class PriceCharts extends React.Component {
         .attr("height", d => {
             return height - margin.top - margin.bottom - yScale(d.field5)
         });
-        
+
         // Add the X Axis
         svg.append("g")
         .attr("class", "x axis")
@@ -145,7 +145,7 @@ class PriceCharts extends React.Component {
         // Add the Y Axis
         svg.append("g")
         .attr("class", "y axis")
-        .call(yAxis); 
+        .call(yAxis);
 
   }
 
@@ -168,6 +168,22 @@ class PriceCharts extends React.Component {
             selectedCities: cityList,
             selectedCuisines: []
         });
+    }
+
+    drawGoogleMap() {
+        function generate_map(zoom_value){
+            let map_src = 'https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyCzGa6kea5GkeVEBjPTEUMq2bwz_X0MoNA&size=700x560';
+            var center = '&center=';
+            var zoom = '&zoom=';
+            var lat = map.getCenter().lat();
+            var lng =  map.getCenter().lng();
+            center += lat + ',' + lng;
+            map_src += center;
+            var z = zoom + zoom_value;
+            map_src += z;
+            return map_src;
+        }
+        $("#map-chart").append('<img src="' + generate_map(14) + '"/>')
     }
 
   render() {
@@ -218,14 +234,15 @@ class PriceCharts extends React.Component {
                 });
                 groupBarChartData.push(barChartItem);
             });
-            
              this.drawGroupBarChart(groupBarChartData, '#price-chart');
+             let googleMapData = [];
+             this.drawGoogleMap();
           }).catch(() => {
 
           }).finally(() => {
 
           });
-          
+
       }
     return (
         <div className="container p-0">
@@ -249,7 +266,8 @@ class PriceCharts extends React.Component {
                  }
             </div>
             <div className="row">
-                <div className="col-md w-100" id="price-chart"></div>
+                <div className="col-md-6 w-100" id="price-chart"></div>
+                <div className="col-md-6 w-100" id="map-chart"></div>
             </div>
         </div>
     );
