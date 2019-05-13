@@ -7,8 +7,7 @@ class FeatureCharts extends React.Component {
     super(props);
     this.state = {
         selectedStates: [],
-        selectedCities: [],
-        selectedCuisines: []
+        selectedCities: []
     }
   }
 
@@ -147,24 +146,16 @@ class FeatureCharts extends React.Component {
                     keys.exit().remove();
   }
 
-    onCuisineSelect(cuisineList) {
-        this.setState({
-            selectedCuisines: cuisineList
-        });
-    }
-
     onStateSelect(stateList) {
         this.setState({
             selectedStates: stateList,
-            selectedCities: [],
-            selectedCuisines: []
+            selectedCities: []
         });
     }
 
     onCitySelect(cityList) {
         this.setState({
-            selectedCities: cityList,
-            selectedCuisines: []
+            selectedCities: cityList
         });
     }
 
@@ -212,13 +203,6 @@ class FeatureCharts extends React.Component {
                 {this.state.selectedStates.length ? (
                         <div className="col-md city-filter chart-filters">
                            <CityDropdown stateName={this.state.selectedStates[0]} onCitySelect={this.onCitySelect.bind(this)}/>
-                        </div>
-                    ): (null)
-                 }
-
-                 {this.state.selectedCities.length ? (
-                        <div className="col-md city-filter chart-filters">
-                           <CuisineDropdown isMultiSelect="true" onCuisineSelect={this.onCuisineSelect.bind(this)}/>
                         </div>
                     ): (null)
                  }

@@ -9,7 +9,6 @@ class PriceCharts extends React.Component {
         selectedStates: [],
         selectedCuisines: [],
         selectedCities: []
-
     }
   }
 
