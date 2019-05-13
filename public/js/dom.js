@@ -2,7 +2,7 @@ $(document).ready(function () {
     $(".nav .nav-link").on('click', function () {
         $(".nav-link").removeClass('active');
         $(this).addClass('active');
-        $("html, body").animate({scrollTop: $('[data-view='+ $(this).data('title') +']').offset().top }, 2000);
+        $("html, body").animate({scrollTop: $('[data-view='+ $(this).data('title') +']').offset().top }, 1000);
     });
 
     $('#yt-background-video').YTPlayer({

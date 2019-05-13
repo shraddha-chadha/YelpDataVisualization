@@ -170,20 +170,18 @@ class PriceCharts extends React.Component {
         });
     }
 
-    drawGoogleMap() {
-        function generate_map(zoom_value){
-            let map_src = 'https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyCzGa6kea5GkeVEBjPTEUMq2bwz_X0MoNA&size=700x560';
-            var center = '&center=';
-            var zoom = '&zoom=';
-            var lat = map.getCenter().lat();
-            var lng =  map.getCenter().lng();
-            center += lat + ',' + lng;
-            map_src += center;
-            var z = zoom + zoom_value;
-            map_src += z;
-            return map_src;
+    drawGoogleMap(data) {
+        let height = 500;
+        let width = $("#map-chart").width();
+        $("#map-chart").empty();
+        let markers = '';
+        for (let i = 0; i < data.length; i++) {
+            markers = markers + '&markers=color:red%7Clabel:R%7C' + data[i]['latitude'] + ',' + data[i]['longitude'];
         }
-        $("#map-chart").append('<img src="' + generate_map(14) + '"/>')
+        $("#map-chart").append(`
+        <img src="https://maps.googleapis.com/maps/api/staticmap?&size=`+ width +`x500&maptype=roadmap
+`+ markers + `
+&key=AIzaSyAecin5AcxwhVi7R_E6mCXXd_WLtVVXwps"/>`)
     }
 
   render() {
@@ -235,8 +233,7 @@ class PriceCharts extends React.Component {
                 groupBarChartData.push(barChartItem);
             });
              this.drawGroupBarChart(groupBarChartData, '#price-chart');
-             let googleMapData = [];
-             this.drawGoogleMap();
+             this.drawGoogleMap(response.data.results);
           }).catch(() => {
 
           }).finally(() => {

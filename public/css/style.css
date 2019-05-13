@@ -204,3 +204,21 @@ header.sticky {
 .chart-filters {
     transition: width 0.3s ease-in;
 }
+
+#states-chart svg{
+    background: #f3f3f3;
+    margin-top: 10px;
+}
+#map-chart{
+    background: #f3f3f3;
+    border-radius: 5px;
+    margin-top: 20px;
+    box-shadow: 0px 5px 5px #c1c1c1!important;
+}
+
+svg {
+    background: #f3f3f3;
+    border-radius: 5px;
+    margin-top: 20px;
+    box-shadow: 0px 5px 5px #c1c1c1!important;
+}
