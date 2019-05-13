@@ -11,31 +11,9 @@ class RatingCharts extends React.Component {
     }
   }
 
-  drawChart() {
-      $("#ratings-chart").empty();
-      let dataset = {
-            "children": [{"Name":"Olives","Count":4319},
-                {"Name":"Tea","Count":4159},
-                {"Name":"Mashed Potatoes","Count":2583},
-                {"Name":"Boiled Potatoes","Count":2074},
-                {"Name":"Milk","Count":1894},
-                {"Name":"Chicken Salad","Count":1809},
-                {"Name":"Vanilla Ice Cream","Count":1713},
-                {"Name":"Cocoa","Count":1636},
-                {"Name":"Lettuce Salad","Count":1566},
-                {"Name":"Lobster Salad","Count":1511},
-                {"Name":"Chocolate","Count":1489},
-                {"Name":"Apple Pie","Count":1487},
-                {"Name":"Orange Juice","Count":1423},
-                {"Name":"American Cheese","Count":1372},
-                {"Name":"Green Peas","Count":1341},
-                {"Name":"Assorted Cakes","Count":1331},
-                {"Name":"French Fried Potatoes","Count":1328},
-                {"Name":"Potato Salad","Count":1306},
-                {"Name":"Baked Potatoes","Count":1293},
-                {"Name":"Roquefort","Count":1273},
-                {"Name":"Stewed Prunes","Count":1268}]
-        };
+  drawChart(data, selector) {
+      $(selector).empty();
+      let dataset = data;
 
         var diameter = 600;
         var color = d3.scaleOrdinal(d3.schemeCategory20);
@@ -44,7 +22,7 @@ class RatingCharts extends React.Component {
             .size([diameter, diameter])
             .padding(1.5);
 
-        var svg = d3.select("#ratings-chart")
+        var svg = d3.select(selector)
             .append("svg")
             .attr("width", "100%")
             .attr("height", 600)
@@ -76,15 +54,48 @@ class RatingCharts extends React.Component {
             .attr("r", function(d) {
                 return d.r;
             })
+            .style("stroke", "black")
             .style("fill", function(d,i) {
-                return color(i);
+                let colors = ["#5E4FA2", "#3288BD", "#66C2A5", "#ABDDA4", "#E6F598", 
+    "#FFFFBF", "#FEE08B", "#FDAE61", "#F46D43", "#D53E4F", "#9E0142"];
+                switch(d.data.Name) {
+                    case "1":
+                        return colors[0];
+                    break;
+                    case "1.5":
+                        return colors[1];
+                    break;
+                    case "2":
+                        return colors[2];
+                    break;
+                    case "2.5":
+                        return colors[3];
+                    break;
+                    case "3":
+                        return colors[4];
+                    break;
+                    case "3.5":
+                        return colors[5];
+                    break;
+                    case "4":
+                        return colors[6];
+                    break;
+                    case "4.5":
+                        return colors[7];
+                    break;
+                    case "5":
+                        return colors[8];
+                    break;
+                    default:
+                        return colors[9];
+                }
             });
 
         node.append("text")
-            .attr("dy", ".2em")
+            .attr("dy", "-1em")
             .style("text-anchor", "middle")
             .text(function(d) {
-                return d.data.Name.substring(0, d.r / 3);
+                return  d.data.State;
             })
             .attr("font-family", "sans-serif")
             .attr("font-size", function(d){
@@ -92,7 +103,21 @@ class RatingCharts extends React.Component {
             })
             .transition()
 			.duration(2500)
-            .attr("fill", "white");
+            .attr("fill", "#000");
+
+        node.append("text")
+            .attr("dy", ".2em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+                return  d.data.Name.substring(0, d.r / 3);
+            })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", function(d){
+                return d.r/5;
+            })
+            .transition()
+			.duration(2500)
+            .attr("fill", "#000");
 
         node.append("text")
             .attr("dy", "1.3em")
@@ -106,12 +131,10 @@ class RatingCharts extends React.Component {
             })
             .transition()
 			.duration(2500)
-            .attr("fill", "white");
+            .attr("fill", "#000");
 
         d3.select(self.frameElement)
             .style("height", diameter + "px");
-
-
   }
 
  onCuisineSelect(cuisineList) {
@@ -128,8 +151,109 @@ class RatingCharts extends React.Component {
 
 render() {
     if (this.state.selectedCuisines.length && this.state.selectedStates.length) {
-        axios.get('/api/restaurants').then((response) => {
-            this.drawChart(response.data);
+        $("#ratings-chart").html('Loading...');
+        let url = '/api/restaurants';
+        url = url + '?state=' + this.state.selectedStates.join(',');
+        let bubbleChartData = [];
+        this.state.selectedStates.map((item) => {
+            bubbleChartData.push({
+                "Name": "0",
+                "Count": 0,
+                "State": item
+            });
+            bubbleChartData.push({
+                "Name": "1",
+                "Count": 0,
+                "State": item
+            });
+            bubbleChartData.push({
+                "Name": "1.5",
+                "Count": 0,
+                "State": item
+            });
+            bubbleChartData.push({
+                "Name": "2",
+                "Count": 0,
+                "State": item
+            });
+            bubbleChartData.push({
+                "Name": "2.5",
+                "Count": 0,
+                "State": item
+            });
+            bubbleChartData.push({
+                "Name": "3",
+                "Count": 0,
+                "State": item
+            });
+            bubbleChartData.push({
+                "Name": "3.5",
+                "Count": 0,
+                "State": item
+            });
+            bubbleChartData.push({
+                "Name": "4",
+                "Count": 0,
+                "State": item
+            });
+            bubbleChartData.push({
+                "Name": "4.5",
+                "Count": 0,
+                "State": item
+            });
+            bubbleChartData.push({
+                "Name": "5",
+                "Count": 0,
+                "State": item
+            });
+        });
+        axios.get(url).then((response) => {
+            for (let i = 0; i < response.data.results.length; i++) {
+                let item = response.data.results[i];
+                if (item.stars && item.state)  {
+                    for (let j = 0; j < bubbleChartData.length; j++) {
+                        let bubbleChartItem = bubbleChartData[j];
+                        if (bubbleChartItem["State"] == item.state) {
+                            switch(item.stars) {
+                                case "1":
+                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
+                                break;
+                                case "1.5":
+                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
+                                break;
+                                case "2":
+                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
+                                break;
+                                case "2.5":
+                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
+                                break;
+                                case "3":
+                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
+                                break;
+                                case "3.5":
+                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
+                                break;
+                                case "4":
+                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
+                                break;
+                                case "4.5":
+                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
+                                break;
+                                case "5":
+                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
+                                break;
+                                default:
+                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
+                            }
+                        }
+                    }
+                    
+                }
+                else {
+                        
+                }
+            }
+            this.drawChart({ "children": bubbleChartData}, "#ratings-chart");
         })
         .catch((error) => {
             console.log(error);
@@ -146,7 +270,7 @@ render() {
                 </div>
                 {this.state.selectedCuisines.length ? (
                         <div className="col-md state-filter chart-filters">
-                           <StateDropdown onStateSelect={this.onStateSelect.bind(this)}/>
+                           <StateDropdown isMultiSelect="true" onStateSelect={this.onStateSelect.bind(this)}/>
                         </div>
                     ): (null)
                  }
