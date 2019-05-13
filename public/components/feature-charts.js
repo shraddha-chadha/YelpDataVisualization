@@ -147,12 +147,6 @@ class FeatureCharts extends React.Component {
                     keys.exit().remove();
   }
 
-  getStates() {
-    return this.state.states.map(function (state) {
-        return <option key={state}>{state}</option>
-    })
-  }
-
     onCuisineSelect(cuisineList) {
         this.setState({
             selectedCuisines: cuisineList

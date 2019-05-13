@@ -52,6 +52,10 @@ class CuisineCharts extends React.Component {
             .data(data)
             .enter().append("rect")
             .attr("class", "bar")
+            .style('fill', function(d, i) {
+                let colors = ['#74b9ff', '#ff7675', '#00b894', '#6c5ce7', '#b2bec3'];
+                return colors[i];
+            })
             .attr("x", function(d) { return x(d.priceRange); })
             .attr("width", x.bandwidth())
             .transition()
@@ -234,11 +238,11 @@ class CuisineCharts extends React.Component {
         else {
             barChartData[4].count = barChartData[4].count + 1;
         }
-        
+
     });
     this.drawBarChart(barChartData, '#cuisine-chart-2');
     let bubbleData = {
-        "children": response.data.validCategories.filter((item) => { 
+        "children": response.data.validCategories.filter((item) => {
             return this.state.selectedCuisines.indexOf(item.Name) > -1;
         })
     };
@@ -260,7 +264,7 @@ class CuisineCharts extends React.Component {
             console.log(error);
         })
         .finally(() => {
-        
+
         });
     }
     else {

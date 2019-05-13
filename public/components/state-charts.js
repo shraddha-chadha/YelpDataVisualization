@@ -12,107 +12,70 @@ class StateCharts extends React.Component {
     }
   }
 
-  drawChart() {
-      $("#shates-charts").empty();
-      let dataset = {
-            "children": [{"Name":"Olives","Count":4319},
-                {"Name":"Tea","Count":4159},
-                {"Name":"Mashed Potatoes","Count":2583},
-                {"Name":"Boiled Potatoes","Count":2074},
-                {"Name":"Milk","Count":1894},
-                {"Name":"Chicken Salad","Count":1809},
-                {"Name":"Vanilla Ice Cream","Count":1713},
-                {"Name":"Cocoa","Count":1636},
-                {"Name":"Lettuce Salad","Count":1566},
-                {"Name":"Lobster Salad","Count":1511},
-                {"Name":"Chocolate","Count":1489},
-                {"Name":"Apple Pie","Count":1487},
-                {"Name":"Orange Juice","Count":1423},
-                {"Name":"American Cheese","Count":1372},
-                {"Name":"Green Peas","Count":1341},
-                {"Name":"Assorted Cakes","Count":1331},
-                {"Name":"French Fried Potatoes","Count":1328},
-                {"Name":"Potato Salad","Count":1306},
-                {"Name":"Baked Potatoes","Count":1293},
-                {"Name":"Roquefort","Count":1273},
-                {"Name":"Stewed Prunes","Count":1268}]
-        };
+  drawChart(data, selector) {
+    $(selector).empty();
 
-        var diameter = 600;
-        var color = d3.scaleOrdinal(d3.schemeCategory20);
+    let state = selector.split('-')[2];
 
-        var bubble = d3.pack(dataset)
-            .size([diameter, diameter])
-            .padding(1.5);
+    // set the dimensions and margins of the graph
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+        width = $(selector).width() - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
 
-        var svg = d3.select("#ratings-chart")
-            .append("svg")
-            .attr("width", "100%")
-            .attr("height", 600)
-            .attr("class", "bubble");
+    // set the ranges
+    var x = d3.scaleBand()
+            .range([0, width])
+            .padding(0.1);
+    var y = d3.scaleLinear()
+            .range([height, 0]);
 
-        var nodes = d3.hierarchy(dataset)
-            .sum(function(d) { return d.Count; });
+    // append the svg object to the body of the page
+    // append a 'group' element to 'svg'
+    // moves the 'group' element to the top left margin
+    var svg = d3.select(selector).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
-        var node = svg.selectAll(".node")
-            .data(bubble(nodes).descendants())
-            .enter()
-            .filter(function(d){
-                return  !d.children
-            })
-            .append("g")
-            .attr("class", "node")
-            .attr("transform", function(d) {
-                return "translate(" + d.x + "," + d.y + ")";
-            });
+    // format the data
+    data.forEach(function(d) {
+        d.count = +d.Count;
+    });
 
-        node.append("title")
-            .text(function(d) {
-                return d.Name + ": " + d.Count;
-            });
+    // Scale the range of the data in the domains
+    x.domain(data.map(function(d) { return d.Name; }));
+    y.domain([0, d3.max(data, function(d) { return d.count; })]);
 
-        node.append("circle")
-            .transition()
-			.duration(2000)
-            .attr("r", function(d) {
-                return d.r;
-            })
-            .style("fill", function(d,i) {
-                return color(i);
-            });
+    // append the rectangles for the bar chart
+    svg.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d.Name); })
+        .attr("width", x.bandwidth())
+        .attr("y", function(d) { return y(d.count); })
+        .attr("height", function(d) { return height - y(d.count); })
+        .transition()
+        .duration(2000)
+        .style('fill', '#0984e3');
 
-        node.append("text")
-            .attr("dy", ".2em")
-            .style("text-anchor", "middle")
-            .text(function(d) {
-                return d.data.Name.substring(0, d.r / 3);
-            })
-            .attr("font-family", "sans-serif")
-            .attr("font-size", function(d){
-                return d.r/5;
-            })
-            .transition()
-			.duration(2500)
-            .attr("fill", "white");
+    // add the x Axis
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
 
-        node.append("text")
-            .attr("dy", "1.3em")
-            .style("text-anchor", "middle")
-            .text(function(d) {
-                return d.data.Count;
-            })
-            .attr("font-family",  "Gill Sans", "Gill Sans MT")
-            .attr("font-size", function(d){
-                return d.r/5;
-            })
-            .transition()
-			.duration(2500)
-            .attr("fill", "white");
+    // add the y Axis
+    svg.append("g")
+      .call(d3.axisLeft(y));
 
-        d3.select(self.frameElement)
-            .style("height", diameter + "px");
-
-
+      svg.append('g')
+      .attr("transform", "translate(200, 480)")
+      .append('text')
+      .text(state)
+      .style('fill', 'red')
+      .style('font-size', '12px');
   }
 
   onCitySelect(cityList) {
@@ -133,10 +96,23 @@ class StateCharts extends React.Component {
      });
  }
 
-  render() {
-    if (this.state.selectedCuisines.length && this.state.selectedStates.length) {
-        axios.get('/api/restaurants').then((response) => {
-            this.drawChart(response.data);
+  drawStateWiseChart(state) {
+        let stateDocumentSelector = "#state-chart-" + state;
+        $(stateDocumentSelector).remove();
+        if (!this.state.selectedCuisines.length) {
+            return;
+        }
+        $("#states-chart").append('<div class="col-md-6" id="state-chart-' + state + '">Loading...</div>')
+        let url = '/api/restaurants';
+        url = url + '?state=' + state;
+        url = url + '&cuisine' + this.state.selectedCuisines.join(',');
+        axios.get(url).then((response) => {
+            let chartData = [];
+            console.log(response.data);
+            chartData = response.data.validCategories.filter((item) => {
+                return this.state.selectedCuisines.indexOf(item.Name) > -1;
+            });
+            this.drawChart(chartData, stateDocumentSelector);
         })
         .catch((error) => {
             console.log(error);
@@ -144,30 +120,30 @@ class StateCharts extends React.Component {
         .finally(() => {
 
         });
-    }
+  }
+
+  render() {
     return (
         <div className="container p-0">
             <div className="row view-container">
                 <div className="col-md state-filter chart-filters">
-                    <StateDropdown onStateSelect={this.onStateSelect.bind(this)}/>
+                    <StateDropdown isMultiSelect="true" onStateSelect={this.onStateSelect.bind(this)}/>
                </div>
 
-                {this.state.selectedStates.length ? (
-                        <div className="col-md city-filter chart-filters">
-                           <CityDropdown isMultiSelect="true" stateName={this.state.selectedStates[0]} onCitySelect={this.onCitySelect.bind(this)}/>
-                        </div>
-                    ): (null)
-                 }
-
-                 {this.state.selectedCities.length ? (
+                 {this.state.selectedStates.length ? (
                         <div className="col-md cuisine-filter chart-filters">
                            <CuisineDropdown isMultiSelect="true" onCuisineSelect={this.onCuisineSelect.bind(this)}/>
                         </div>
                     ): (null)
                  }
             </div>
-            <div className="row">
-                <div className="col-md w-100" id="states-chart"></div>
+            <div className="container">
+                <div className="row" id="states-chart">
+                    {this.state.selectedStates.map((item) => {
+                        this.drawStateWiseChart(item);
+                    })
+                    }
+                </div>
             </div>
         </div>
     );
