@@ -12,67 +12,6 @@ class CuisineCharts extends React.Component {
     }
   }
 
-  drawBarChart(data, selector) {
-        $(selector).empty();
-        // set the dimensions and margins of the graph
-        var margin = {top: 20, right: 20, bottom: 30, left: 40},
-            width = $(selector).width() - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
-
-        // set the ranges
-        var x = d3.scaleBand()
-                .range([0, width])
-                .padding(0.1);
-        var y = d3.scaleLinear()
-                .range([height, 0]);
-
-        // append the svg object to the body of the page
-        // append a 'group' element to 'svg'
-        // moves the 'group' element to the top left margin
-        var svg = d3.select(selector).append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
-
-        // get the data
-
-        // format the data
-        data.forEach(function(d) {
-            d.count = +d.count;
-        });
-
-        // Scale the range of the data in the domains
-        x.domain(data.map(function(d) { return d.priceRange; }));
-        y.domain([0, d3.max(data, function(d) { return d.count; })]);
-
-        // append the rectangles for the bar chart
-        svg.selectAll(".bar")
-            .data(data)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .style('fill', function(d, i) {
-                let colors = ['#74b9ff', '#ff7675', '#00b894', '#6c5ce7', '#b2bec3'];
-                return colors[i];
-            })
-            .attr("x", function(d) { return x(d.priceRange); })
-            .attr("width", x.bandwidth())
-            .transition()
-            .duration(2000)
-            .attr("y", function(d) { return y(d.count); })
-            .attr("height", function(d) { return height - y(d.count); });
-
-        // add the x Axis
-        svg.append("g")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x));
-
-        // add the y Axis
-        svg.append("g")
-            .call(d3.axisLeft(y));
-  }
-
   drawBubbleChart(data, selector) {
       $(selector).empty();
       let dataset = data;
@@ -95,7 +34,7 @@ class CuisineCharts extends React.Component {
             .append("svg")
             .attr("width", "100%")
             .attr("height", height)
-            .attr("class", "bubble");
+            .attr("className", "bubble");
 
         var nodes = d3.hierarchy(dataset)
             .sum(function(d) { return d.Count; });
@@ -107,7 +46,7 @@ class CuisineCharts extends React.Component {
                 return  !d.children
             })
             .append("g")
-            .attr("class", "node")
+            .attr("className", "node")
             .attr("transform", function(d) {
                 return "translate(" + d.x + "," + d.y + ")";
             });
@@ -159,6 +98,17 @@ class CuisineCharts extends React.Component {
             .style("height", diameter + "px");
   }
 
+  drawGoogleMap(data, selector) {
+        $(selector).empty();
+        let height = 500 - 20;
+        let width = $(selector).width();
+        let markers = '';
+        for (let i = 0; i < data.length; i++) {
+            markers = markers + '&markers=color:red%7Clabel:R%7C' + data[i]['latitude'] + ',' + data[i]['longitude'];
+        }
+        $(selector).append(`<img src="https://maps.googleapis.com/maps/api/staticmap?&size=`+ width + `x500&maptype=roadmap` + markers + `&key=AIzaSyAecin5AcxwhVi7R_E6mCXXd_WLtVVXwps"/>`);
+    }
+
  onCuisineSelect(cuisineList) {
      this.setState({
          selectedCuisines: cuisineList
@@ -180,73 +130,14 @@ class CuisineCharts extends React.Component {
      });
  }
 
- getCityDropdown(state) {
-     if (state) {
-         return (
-            <div className="col-md city-filter chart-filters">
-                        <CityDropdown stateName={this.state.selectedStates[0]} onCitySelect={this.onCitySelect.bind(this)}/>
-            </div>
-         );
-     }
-     else {
-         return null;
-     }
- }
-
  drawAllCharts(response) {
-    let barChartData = [
-        {
-            'count': 0,
-            'priceRange': '$'
-        },
-        {
-            'count': 0,
-            'priceRange': '$$'
-        },
-        {
-            'count': 0,
-            'priceRange': '$$$'
-        },
-        {
-            'count': 0,
-            'priceRange': '$$$$'
-        },
-        {
-            'count': 0,
-            'priceRange': '?'
-        }
-    ];
-    response.data.results.map((item) => {
-        if (item.attributes && item.attributes.RestaurantsPriceRange2 !== undefined) {
-            switch(parseInt(item.attributes.RestaurantsPriceRange2)) {
-                case 1:
-                    barChartData[0].count = barChartData[0].count + 1;
-                break;
-                case 2:
-                    barChartData[1].count = barChartData[1].count + 1;
-                break;
-                case 3:
-                    barChartData[2].count = barChartData[2].count + 1;
-                break;
-                case 4:
-                    barChartData[3].count = barChartData[3].count + 1;
-                break;
-                default:
-                    barChartData[4].count = barChartData[4].count + 1;
-            }
-        }
-        else {
-            barChartData[4].count = barChartData[4].count + 1;
-        }
-
-    });
-    this.drawBarChart(barChartData, '#cuisine-chart-2');
-    let bubbleData = {
-        "children": response.data.validCategories.filter((item) => {
-            return this.state.selectedCuisines.indexOf(item.Name) > -1;
-        })
-    };
-    this.drawBubbleChart(bubbleData, "#cuisine-chart-1");
+     let bubbleData = {
+           "children": response.data.validCategories.filter((item) => {
+               return this.state.selectedCuisines.indexOf(item.Name) > -1;
+           })
+     };
+     this.drawBubbleChart(bubbleData, "#cuisine-chart-1");
+     this.drawGoogleMap(response.data.results, "#map-chart");
  }
 
   render() {
@@ -268,7 +159,7 @@ class CuisineCharts extends React.Component {
         });
     }
     else {
-        $("#cuisine-chart-1, #cuisine-chart-2").empty();
+        $("#cuisine-chart-1, #map-chart").empty();
     }
     return (
         <div className="container p-0">
@@ -293,7 +184,7 @@ class CuisineCharts extends React.Component {
             </div>
             <div className="row">
                 <div className="col-md-6 w-100 p-3" id="cuisine-chart-1"></div>
-                <div className="col-md-6 w-100 p-3" id="cuisine-chart-2"></div>
+                <div className="col-md-6 w-100 p-3" id="map-chart"></div>
             </div>
         </div>
     );

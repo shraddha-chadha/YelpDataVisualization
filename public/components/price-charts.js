@@ -147,6 +147,66 @@ class PriceCharts extends React.Component {
         .call(yAxis);
 
   }
+  drawBarChart(data, selector) {
+        $(selector).empty();
+        // set the dimensions and margins of the graph
+        var margin = {top: 20, right: 20, bottom: 30, left: 40},
+            width = $(selector).width() - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        // set the ranges
+        var x = d3.scaleBand()
+            .range([0, width])
+            .padding(0.1);
+        var y = d3.scaleLinear()
+            .range([height, 0]);
+
+        // append the svg object to the body of the page
+        // append a 'group' element to 'svg'
+        // moves the 'group' element to the top left margin
+        var svg = d3.select(selector).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        // get the data
+
+        // format the data
+        data.forEach(function(d) {
+            d.count = +d.count;
+        });
+
+        // Scale the range of the data in the domains
+        x.domain(data.map(function(d) { return d.priceRange; }));
+        y.domain([0, d3.max(data, function(d) { return d.count; })]);
+
+        // append the rectangles for the bar chart
+        svg.selectAll(".bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .style('fill', function(d, i) {
+                let colors = ['#74b9ff', '#ff7675', '#00b894', '#6c5ce7', '#b2bec3'];
+                return colors[i];
+            })
+            .attr("x", function(d) { return x(d.priceRange); })
+            .attr("width", x.bandwidth())
+            .transition()
+            .duration(2000)
+            .attr("y", function(d) { return y(d.count); })
+            .attr("height", function(d) { return height - y(d.count); });
+
+        // add the x Axis
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        // add the y Axis
+        svg.append("g")
+            .call(d3.axisLeft(y));
+    }
 
     onCuisineSelect(cuisineList) {
         this.setState({
@@ -169,19 +229,7 @@ class PriceCharts extends React.Component {
         });
     }
 
-    drawGoogleMap(data) {
-        let height = 500;
-        let width = $("#map-chart").width();
-        $("#map-chart").empty();
-        let markers = '';
-        for (let i = 0; i < data.length; i++) {
-            markers = markers + '&markers=color:red%7Clabel:R%7C' + data[i]['latitude'] + ',' + data[i]['longitude'];
-        }
-        $("#map-chart").append(`
-        <img src="https://maps.googleapis.com/maps/api/staticmap?&size=`+ width +`x500&maptype=roadmap
-`+ markers + `
-&key=AIzaSyAecin5AcxwhVi7R_E6mCXXd_WLtVVXwps"/>`)
-    }
+
 
   render() {
       if (this.state.selectedStates.length && this.state.selectedCities.length && this.state.selectedCuisines.length) {
@@ -231,8 +279,57 @@ class PriceCharts extends React.Component {
                 });
                 groupBarChartData.push(barChartItem);
             });
-             this.drawGroupBarChart(groupBarChartData, '#price-chart');
-             this.drawGoogleMap(response.data.results);
+
+            let barChartData = [
+                {
+                    'count': 0,
+                    'priceRange': '$'
+                },
+                {
+                    'count': 0,
+                    'priceRange': '$$'
+                },
+                {
+                    'count': 0,
+                    'priceRange': '$$$'
+                },
+                {
+                    'count': 0,
+                    'priceRange': '$$$$'
+                },
+                {
+                    'count': 0,
+                    'priceRange': 'No Info'
+                }
+                ];
+            response.data.results.map((item) => {
+                if (item.attributes && item.attributes.RestaurantsPriceRange2 !== undefined) {
+                    switch (parseInt(item.attributes.RestaurantsPriceRange2)) {
+                        case 1:
+                            barChartData[0].count = barChartData[0].count + 1;
+                            break;
+                        case 2:
+                            barChartData[1].count = barChartData[1].count + 1;
+                            break;
+                        case 3:
+                            barChartData[2].count = barChartData[2].count + 1;
+                            break;
+                        case 4:
+                            barChartData[3].count = barChartData[3].count + 1;
+                            break;
+                        default:
+                            barChartData[4].count = barChartData[4].count + 1;
+                    }
+                  }
+                  else {
+                      barChartData[4].count = barChartData[4].count + 1;
+                  }
+
+              });
+
+            this.drawGroupBarChart(groupBarChartData, '#price-chart');
+            this.drawBarChart(barChartData, '#price-chart-2');
+
           }).catch(() => {
 
           }).finally(() => {
@@ -263,7 +360,7 @@ class PriceCharts extends React.Component {
             </div>
             <div className="row">
                 <div className="col-md-6 w-100" id="price-chart"></div>
-                <div className="col-md-6 w-100" id="map-chart"></div>
+                <div className="col-md-6 w-100" id="price-chart-2"></div>
             </div>
         </div>
     );
