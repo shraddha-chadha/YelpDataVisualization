@@ -1,4 +1,6 @@
 'use strict';
+const CancelToken = axios.CancelToken;
+let pendingAPI = [];
 const selector = '#state-charts';
 const e = React.createElement;
 
@@ -8,7 +10,8 @@ class StateCharts extends React.Component {
     this.state = {
         selectedCuisines: [],
         selectedStates: [],
-        selectedCities: []
+        selectedCities: [],
+        token: 0
     }
   }
 
@@ -78,13 +81,16 @@ class StateCharts extends React.Component {
       .style('font-size', '12px');
   }
 
-  onCitySelect(cityList) {
-      this.setState({
-          selectedCities: cityList
-      });
-  }
-
  onCuisineSelect(cuisineList) {
+     let number_pending_api = pendingAPI.length;
+     console.log(number_pending_api);
+     if (number_pending_api > 0) {
+         // Cancel all
+         for (let i = number_pending_api - 1; i >= 0; i--) {
+             pendingAPI[i].cancel("Cancelled the previous API calls by the user");
+             pendingAPI.pop()
+         }
+     }
      this.setState({
          selectedCuisines: cuisineList
      });
@@ -96,7 +102,8 @@ class StateCharts extends React.Component {
      });
  }
 
-  drawStateWiseChart(state) {
+  drawStateWiseChart(state, token) {
+      pendingAPI.push(token);
         let stateDocumentSelector = "#state-chart-" + state;
         $(stateDocumentSelector).remove();
         if (!this.state.selectedCuisines.length) {
@@ -106,48 +113,60 @@ class StateCharts extends React.Component {
         let url = '/api/restaurants';
         url = url + '?state=' + state;
         url = url + '&cuisine' + this.state.selectedCuisines.join(',');
-        axios.get(url).then((response) => {
-            let chartData = [];
-            console.log(response.data);
-            chartData = response.data.validCategories.filter((item) => {
-                return this.state.selectedCuisines.indexOf(item.Name) > -1;
-            });
-            this.drawChart(chartData, stateDocumentSelector);
-        })
-        .catch((error) => {
-            console.log(error);
-        })
-        .finally(() => {
+        axios.get(url,
+            {
+            cancelToken: token.token
+            }
+        ).then((response) => {
+            var index = pendingAPI.indexOf(token);
+            if (index !== -1) {
+                pendingAPI.splice(index, 1);
+            }
+            if (response.data.count == 0) {
+                $("#states-chart").html('No Data Available. Please try changing filters');
+            }
+            else {
+                let chartData = [];
+                console.log(response.data);
+                chartData = response.data.validCategories.filter((item) => {
+                    return this.state.selectedCuisines.indexOf(item.Name) > -1;
+                });
+                this.drawChart(chartData, stateDocumentSelector);
+            }
+        }).catch(function (thrown) {
+            if (axios.isCancel(thrown)) {
+                console.log('Request canceled', thrown.message);
+            }
 
         });
   }
 
-  render() {
-    return (
-        <div className="container p-0">
+    render() {
+        return (
+            <div className="container p-0">
             <div className="row view-container">
-                <div className="col-md state-filter chart-filters">
-                    <StateDropdown isMultiSelect="true" onStateSelect={this.onStateSelect.bind(this)}/>
-               </div>
+            <div className="col-md state-filter chart-filters">
+            <StateDropdown isMultiSelect="true" onStateSelect={this.onStateSelect.bind(this)}/>
+        </div>
 
-                 {this.state.selectedStates.length ? (
-                        <div className="col-md cuisine-filter chart-filters">
-                           <CuisineDropdown isMultiSelect="true" onCuisineSelect={this.onCuisineSelect.bind(this)}/>
-                        </div>
-                    ): (null)
-                 }
-            </div>
-            <div className="container">
-                <div className="row" id="states-chart">
-                    {this.state.selectedStates.map((item) => {
-                        this.drawStateWiseChart(item);
-                    })
-                    }
-                </div>
-            </div>
+        {this.state.selectedStates.length ? (
+            <div className="col-md cuisine-filter chart-filters">
+            <CuisineDropdown isMultiSelect="true" onCuisineSelect={this.onCuisineSelect.bind(this)}/>
+        </div>
+        ): (null)
+        }
+    </div>
+        <div className="container">
+            <div className="row" id="states-chart">
+            {this.state.selectedStates.map((item) => {
+                this.drawStateWiseChart(item, CancelToken.source());
+            })
+    }
+    </div>
+        </div>
         </div>
     );
-  }
+    }
 }
 
 const domContainer = document.querySelector(selector);

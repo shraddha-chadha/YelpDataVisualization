@@ -2,7 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3374f42c-e2c1-44ef-b7a4-303ff1b7fe29" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/components/checkin-charts.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/components/cuisine-charts.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/components/cuisine-charts.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/components/feature-charts.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/components/feature-charts.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/components/price-charts.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/components/price-charts.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/components/state-charts.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/components/state-charts.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/css/style.css" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -16,38 +22,28 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="cuisine-charts.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/components/cuisine-charts.js">
+      <file leaf-file-name="price-charts.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/components/price-charts.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="531">
-              <caret line="175" column="48" selection-start-line="175" selection-start-column="48" selection-end-line="175" selection-end-column="94" />
+            <state relative-caret-position="547">
+              <caret line="380" column="9" lean-forward="true" selection-start-line="377" selection-start-column="8" selection-end-line="380" selection-end-column="9" />
               <folding>
-                <element signature="n#!!block;n#drawBubbleChart#0;n#CuisineCharts#0" />
-                <element signature="n#!!block;n#drawGoogleMap#0;n#CuisineCharts#0" />
-                <element signature="n#!!block;n#onStateSelect#0;n#CuisineCharts#0" />
-                <element signature="n#!!block;n#onCitySelect#0;n#CuisineCharts#0" />
+                <element signature="n#!!block;n#drawGroupBarChart#0;n#PriceCharts#0" />
+                <element signature="n#!!block;n#drawBarChart#0;n#PriceCharts#0" />
+                <element signature="n#!!block;n#onStateSelect#0;n#PriceCharts#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rating-charts.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/components/rating-charts.js">
+      <file leaf-file-name="state-charts.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/public/components/state-charts.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1395">
-              <caret line="225" lean-forward="true" selection-start-line="225" selection-end-line="225" />
+            <state relative-caret-position="377">
+              <caret line="153" column="60" lean-forward="true" selection-start-line="153" selection-start-column="60" selection-end-line="153" selection-end-column="60" />
               <folding>
-                <element signature="n#!!block;n#drawChart#0;n#RatingCharts#0" />
+                <element signature="n#!!block;n#drawChart#0;n#StateCharts#0" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/public/index.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="265">
-              <caret line="117" column="154" selection-start-line="117" selection-start-column="154" selection-end-line="117" selection-end-column="154" />
             </state>
           </provider>
         </entry>
@@ -62,6 +58,7 @@
       <find>map-chart</find>
       <find>CuisineCharts</find>
       <find>class</find>
+      <find>drawAllCharts</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -75,12 +72,13 @@
         <option value="$PROJECT_DIR$/public/like_button.js" />
         <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/server.js" />
-        <option value="$PROJECT_DIR$/public/components/feature-charts.js" />
-        <option value="$PROJECT_DIR$/public/components/price-charts.js" />
-        <option value="$PROJECT_DIR$/public/css/style.css" />
-        <option value="$PROJECT_DIR$/public/components/cuisine-charts.js" />
         <option value="$PROJECT_DIR$/public/components/rating-charts.js" />
         <option value="$PROJECT_DIR$/public/index.html" />
+        <option value="$PROJECT_DIR$/public/css/style.css" />
+        <option value="$PROJECT_DIR$/public/components/cuisine-charts.js" />
+        <option value="$PROJECT_DIR$/public/components/price-charts.js" />
+        <option value="$PROJECT_DIR$/public/components/feature-charts.js" />
+        <option value="$PROJECT_DIR$/public/components/state-charts.js" />
       </list>
     </option>
   </component>
@@ -127,13 +125,6 @@
               <item name="yelp-data-visualization" type="462c0819:PsiDirectoryNode" />
               <item name="public" type="462c0819:PsiDirectoryNode" />
               <item name="components" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="yelp-data-visualization" type="b2602c69:ProjectViewProjectNode" />
-              <item name="yelp-data-visualization" type="462c0819:PsiDirectoryNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
-              <item name="dropdowns" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="yelp-data-visualization" type="b2602c69:ProjectViewProjectNode" />
@@ -200,7 +191,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="34211000" />
+    <option name="totallyTimeSpent" value="38218000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -213,7 +204,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="7" visible="true" weight="0.27151516" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.590303" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -224,6 +215,25 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Find" order="1" />
     </layout>
+    <layout-to-restore>
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25299507" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.590303" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="10" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -233,7 +243,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <option name="time" value="6" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -276,9 +286,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
           <caret line="3" column="21" selection-start-line="3" selection-start-column="21" selection-end-line="3" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -516,16 +523,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/components/dropdowns/city-dropdown.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/components/feature-charts.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="3" lean-forward="true" selection-start-line="11" selection-start-column="3" selection-end-line="11" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
@@ -540,45 +537,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/components/price-charts.js">
+    <entry file="file://$PROJECT_DIR$/public/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="5" selection-start-line="4" selection-end-line="4" selection-end-column="5" />
-          <folding>
-            <element signature="n#!!block;n#constructor#0;n#PriceCharts#0" />
-            <element signature="e#418#649#0" />
-            <element signature="e#536#625#0" />
-            <element signature="e#1932#1953#0" />
-            <element signature="e#2337#2422#0" />
-            <element signature="e#2434#2455#0" />
-            <element signature="e#2839#2924#0" />
-            <element signature="e#2936#2957#0" />
-            <element signature="e#3341#3426#0" />
-            <element signature="e#3438#3459#0" />
-            <element signature="e#3843#3928#0" />
-            <element signature="e#3940#3961#0" />
-            <element signature="e#4342#4427#0" />
-            <element signature="n#!!block;n#onCuisineSelect#0;n#PriceCharts#0" />
-            <element signature="n#!!block;n#onStateSelect#0;n#PriceCharts#0" />
-            <element signature="n#!!block;n#onCitySelect#0;n#PriceCharts#0" />
-            <element signature="e#10322#10417#0" />
-          </folding>
+        <state relative-caret-position="193">
+          <caret line="146" column="30" lean-forward="true" selection-start-line="146" selection-start-column="30" selection-end-line="146" selection-end-column="30" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/css/style.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="568">
-          <caret line="219" column="23" selection-start-line="219" selection-start-column="23" selection-end-line="219" selection-end-column="23" />
+        <state relative-caret-position="392">
+          <caret line="220" column="4" selection-start-line="220" selection-start-column="4" selection-end-line="220" selection-end-column="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/public/components/cuisine-charts.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="531">
-          <caret line="175" column="48" selection-start-line="175" selection-start-column="48" selection-end-line="175" selection-end-column="94" />
+        <state relative-caret-position="285">
+          <caret line="103" column="11" selection-start-line="103" selection-start-column="11" selection-end-line="103" selection-end-column="11" />
           <folding>
             <element signature="n#!!block;n#drawBubbleChart#0;n#CuisineCharts#0" />
+            <element signature="n#!!block;n#initMap#0;n#CuisineCharts#0" />
             <element signature="n#!!block;n#drawGoogleMap#0;n#CuisineCharts#0" />
             <element signature="n#!!block;n#onStateSelect#0;n#CuisineCharts#0" />
             <element signature="n#!!block;n#onCitySelect#0;n#CuisineCharts#0" />
@@ -586,9 +565,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/public/components/feature-charts.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="166" column="22" lean-forward="true" selection-start-line="166" selection-start-column="22" selection-end-line="166" selection-end-column="22" />
+          <folding>
+            <element signature="n#!!block;n#drawChart#0;n#FeatureCharts#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/public/components/rating-charts.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1395">
+        <state relative-caret-position="1455">
           <caret line="225" lean-forward="true" selection-start-line="225" selection-end-line="225" />
           <folding>
             <element signature="n#!!block;n#drawChart#0;n#RatingCharts#0" />
@@ -596,10 +585,25 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/index.html">
+    <entry file="file://$PROJECT_DIR$/public/components/price-charts.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="265">
-          <caret line="117" column="154" selection-start-line="117" selection-start-column="154" selection-end-line="117" selection-end-column="154" />
+        <state relative-caret-position="547">
+          <caret line="380" column="9" lean-forward="true" selection-start-line="377" selection-start-column="8" selection-end-line="380" selection-end-column="9" />
+          <folding>
+            <element signature="n#!!block;n#drawGroupBarChart#0;n#PriceCharts#0" />
+            <element signature="n#!!block;n#drawBarChart#0;n#PriceCharts#0" />
+            <element signature="n#!!block;n#onStateSelect#0;n#PriceCharts#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/components/state-charts.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="377">
+          <caret line="153" column="60" lean-forward="true" selection-start-line="153" selection-start-column="60" selection-end-line="153" selection-end-column="60" />
+          <folding>
+            <element signature="n#!!block;n#drawChart#0;n#StateCharts#0" />
+          </folding>
         </state>
       </provider>
     </entry>
