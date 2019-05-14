@@ -15,6 +15,40 @@ class CuisineCharts extends React.Component {
     }
   }
 
+  initMap(data) {
+      // data = [{lat: -25.363, lng: 131.044,}, {lat: -25.363, lng: 131.044}, {lat: -25.363, lng: 131.044}, {lat: -25.363, lng: 131.044}, {lat: -25.363, lng: 131.044}]
+
+        // on time
+        var map = new google.maps.Map(document.getElementById('map-chart'), {
+          zoom: 4,
+          center: uluru
+        });
+
+        data.forEach((item) => {
+            var contentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<h1 id="firstHeading" class="firstHeading"> HEADERING HERE</h1>'+
+            '<div id="bodyContent">'+
+            // WRITE BODY
+            '</div>'+
+            '</div>';
+
+        var infowindow = new google.maps.InfoWindow({
+          content: contentString
+        });
+
+        var marker = new google.maps.Marker({
+          position: uluru,
+          map: map,
+          title: 'Uluru (Ayers Rock)'
+        });
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+    });
+  }
+
   drawBubbleChart(data, selector) {
       $(selector).empty();
       let dataset = data;
@@ -110,6 +144,8 @@ class CuisineCharts extends React.Component {
             markers = markers + '&markers=color:red%7Clabel:R%7C' + data[i]['latitude'] + ',' + data[i]['longitude'];
         }
         $(selector).append(`<img src="https://maps.googleapis.com/maps/api/staticmap?&size=`+ width + `x500&maptype=roadmap` + markers + `&key=AIzaSyAecin5AcxwhVi7R_E6mCXXd_WLtVVXwps"/>`);
+
+        this.initMap();
     }
 
  onCuisineSelect(cuisineList) {
