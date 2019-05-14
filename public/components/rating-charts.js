@@ -1,4 +1,6 @@
 'use strict';
+const CancelToken = axios.CancelToken;
+let pendingAPI = [];
 const selector = '#rating-charts';
 const e = React.createElement;
 
@@ -7,7 +9,8 @@ class RatingCharts extends React.Component {
     super(props);
     this.state = {
         selectedCuisines: [],
-        selectedStates: []
+        selectedStates: [],
+        token: 0
     }
   }
 
@@ -26,7 +29,11 @@ class RatingCharts extends React.Component {
             .append("svg")
             .attr("width", "100%")
             .attr("height", 600)
-            .attr("class", "bubble");
+            .attr("class", "bubble")
+            .append("g")
+            .attr("transform", function(d) {
+                return "translate(150, 0)"
+            });
 
         var nodes = d3.hierarchy(dataset)
             .sum(function(d) { return d.Count; });
@@ -144,124 +151,82 @@ class RatingCharts extends React.Component {
  }
 
  onStateSelect(stateList) {
+      let number_pending_api = pendingAPI.length;
+      if(number_pending_api > 0) {
+          // Cancel all
+          for(let i=number_pending_api-1; i >= 0; i--) {
+              pendingAPI[i].cancel("Cancelled the previous API calls by the user");
+              pendingAPI.pop()
+          }
+      }
      this.setState({
-         selectedStates: stateList
+         selectedStates: stateList,
+         token: CancelToken.source()
      });
  }
 
-render() {
-    if (this.state.selectedCuisines.length && this.state.selectedStates.length) {
+ render() {
+    if (this.state.selectedCuisines.length && this.state.selectedStates.length)
+    {
+        let token = this.state.token;
+        pendingAPI.push(token);
         $("#ratings-chart").html('Loading...');
         let url = '/api/restaurants';
         url = url + '?state=' + this.state.selectedStates.join(',');
         let bubbleChartData = [];
-        this.state.selectedStates.map((item) => {
-            bubbleChartData.push({
-                "Name": "0",
-                "Count": 0,
-                "State": item
-            });
-            bubbleChartData.push({
-                "Name": "1",
-                "Count": 0,
-                "State": item
-            });
-            bubbleChartData.push({
-                "Name": "1.5",
-                "Count": 0,
-                "State": item
-            });
-            bubbleChartData.push({
-                "Name": "2",
-                "Count": 0,
-                "State": item
-            });
-            bubbleChartData.push({
-                "Name": "2.5",
-                "Count": 0,
-                "State": item
-            });
-            bubbleChartData.push({
-                "Name": "3",
-                "Count": 0,
-                "State": item
-            });
-            bubbleChartData.push({
-                "Name": "3.5",
-                "Count": 0,
-                "State": item
-            });
-            bubbleChartData.push({
-                "Name": "4",
-                "Count": 0,
-                "State": item
-            });
-            bubbleChartData.push({
-                "Name": "4.5",
-                "Count": 0,
-                "State": item
-            });
-            bubbleChartData.push({
-                "Name": "5",
-                "Count": 0,
-                "State": item
-            });
-        });
-        axios.get(url).then((response) => {
-            for (let i = 0; i < response.data.results.length; i++) {
-                let item = response.data.results[i];
-                if (item.stars && item.state)  {
-                    for (let j = 0; j < bubbleChartData.length; j++) {
-                        let bubbleChartItem = bubbleChartData[j];
-                        if (bubbleChartItem["State"] == item.state) {
-                            switch(item.stars) {
-                                case "1":
-                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
-                                break;
-                                case "1.5":
-                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
-                                break;
-                                case "2":
-                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
-                                break;
-                                case "2.5":
-                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
-                                break;
-                                case "3":
-                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
-                                break;
-                                case "3.5":
-                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
-                                break;
-                                case "4":
-                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
-                                break;
-                                case "4.5":
-                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
-                                break;
-                                case "5":
-                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
-                                break;
-                                default:
-                                    bubbleChartData[j]['Count'] = bubbleChartData[j]['Count'] + 1;
-                            }
-                        }
-                    }
-                    
+
+        //Get data
+        axios.get(url,
+            {
+                cancelToken: token.token
+            }
+            )
+            .then((response) => {
+                var index = pendingAPI.indexOf(token);
+                if (index !== -1) {
+                    pendingAPI.splice(index, 1);
                 }
-                else {
-                        
+                let len = response.data.results.length;
+            let dataTemp = {};
+            for (let i = 0; i < len; i++) {
+                let item = response.data.results[i];
+                if (item.stars && item.state)
+                {
+                    let key = item.stars + ',' + item.state;
+
+                    if(key in dataTemp) {
+                        dataTemp[key] = dataTemp[key] + 1;
+                    } else {
+                        dataTemp[key] = 1;
+                    }
                 }
             }
-            this.drawChart({ "children": bubbleChartData}, "#ratings-chart");
-        })
-        .catch((error) => {
-            console.log(error);
-        })
-        .finally(() => {
 
-        });
+            for (let key in dataTemp) {
+                let newkeys = key.split(',');
+                let temp = {};
+                temp['Name'] = newkeys[0];
+                temp['State'] = newkeys[1];
+                temp['Count'] = dataTemp[key];
+                bubbleChartData.push(temp);
+            }
+            console.log(bubbleChartData);
+
+            if(response.data.count == 0) {
+                $("#ratings-chart").html('No Data Available. Please try changing filters');
+
+            } else {
+                this.drawChart({ "children": bubbleChartData}, "#ratings-chart");
+            }
+
+        }).catch(function(thrown) {
+            if (axios.isCancel(thrown)) {
+                console.log('Request canceled', thrown.message);
+            }
+
+            })
     }
+
     return (
         <div className="container p-0">
             <div className="row view-container">

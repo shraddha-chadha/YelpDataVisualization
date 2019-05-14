@@ -1,4 +1,6 @@
 'use strict';
+const CancelToken = axios.CancelToken;
+let pendingAPI = [];
 const selector = '#cuisine-charts';
 const e = React.createElement;
 
@@ -8,7 +10,8 @@ class CuisineCharts extends React.Component {
     this.state = {
         selectedCuisines: [],
         selectedStates: [],
-        selectedCities: []
+        selectedCities: [],
+        token: 0
     }
   }
 
@@ -110,8 +113,17 @@ class CuisineCharts extends React.Component {
     }
 
  onCuisineSelect(cuisineList) {
+     let number_pending_api = pendingAPI.length;
+     if(number_pending_api > 0) {
+         // Cancel all
+         for(let i=number_pending_api-1; i >= 0; i--) {
+             pendingAPI[i].cancel("Cancelled the previous API calls by the user");
+             pendingAPI.pop()
+         }
+     }
      this.setState({
-         selectedCuisines: cuisineList
+         selectedCuisines: cuisineList,
+         token: CancelToken.source()
      });
  }
 
@@ -142,21 +154,36 @@ class CuisineCharts extends React.Component {
 
   render() {
     // when all filters are set
-    if (this.state.selectedCuisines.length && this.state.selectedStates.length && this.state.selectedCities.length) {
-        let url = '/api/restaurants';
-        url = url + '?state=' + this.state.selectedStates.join(',');
-        url = url + '&city=' + this.state.selectedCities.join(',');
-        url = url + '&cuisine=' + this.state.selectedCuisines.join(',');
-        // URL EXAMPLE: /api/restaurants?state=AZ,ON&cuisine=Indian,Mexican&city=Scarborough,Mesa
-        axios.get(url).then((response) => {
-            this.drawAllCharts(response);
-        })
-        .catch((error) => {
-            console.log(error);
-        })
-        .finally(() => {
+      if (this.state.selectedCuisines.length && this.state.selectedStates.length && this.state.selectedCities.length) {
+          $("#cuisine-chart-1").html('Loading...');
+            let token = this.state.token;
+            pendingAPI.push(token);
+            let url = '/api/restaurants';
+            url = url + '?state=' + this.state.selectedStates.join(',');
+            url = url + '&city=' + this.state.selectedCities.join(',');
+            url = url + '&cuisine=' + this.state.selectedCuisines.join(',');
+            // URL EXAMPLE: /api/restaurants?state=AZ,ON&cuisine=Indian,Mexican&city=Scarborough,Mesa
+            axios.get(url,
+                {
+                cancelToken: token.token
+                }
+            ).then((response) => {
+                var index = pendingAPI.indexOf(token);
+                if (index !== -1) {
+                    pendingAPI.splice(index, 1);
+                }
+                if(response.data.count == 0) {
+                    $("#cuisine-chart-1").html('No Data Available. Please try changing filters');
+                } else {
+                    this.drawAllCharts(response);
+                }
 
-        });
+            }).catch(function(thrown) {
+                    if (axios.isCancel(thrown)) {
+                        console.log('Request canceled', thrown.message);
+                    }
+
+                })
     }
     else {
         $("#cuisine-chart-1, #map-chart").empty();
@@ -170,7 +197,7 @@ class CuisineCharts extends React.Component {
 
                 {this.state.selectedStates.length ? (
                         <div className="col-md city-filter chart-filters">
-                           <CityDropdown stateName={this.state.selectedStates[0]} onCitySelect={this.onCitySelect.bind(this)}/>
+                           <CityDropdown isMultiSelect="true" stateName={this.state.selectedStates[0]} onCitySelect={this.onCitySelect.bind(this)}/>
                         </div>
                     ): (null)
                  }
