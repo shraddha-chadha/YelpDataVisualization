@@ -276,7 +276,7 @@ class PriceCharts extends React.Component {
             }
             else {
                 let groupBarChartData = [];
-                this.state.selectedCuisines.forEach((cuisine) => {
+                this.state.selectedCuisines.map((cuisine) => {
                     let barChartItem = {
                         'model_name': cuisine,
                         'field1': 0,
@@ -285,15 +285,19 @@ class PriceCharts extends React.Component {
                         'field4': 0,
                         'field5': 0,
                     }
-                    response.data.results.forEach((item) => {
+                    let c = cuisine.replace(/\s/g,'');
+                    response.data.results.map((item) => {
                         // {state: '', $: 1, $$: 15, $$$: 16, $$$$: 234, ? : 33434}
                         // { 'state': 'Mexican', $: 1, $$: 15, $$$: 16, $$$$: 234, ? : 33434 }
                         //let pattern = '/' + cuisine + '/i';
                         // console.log(item.categories.match(pattern));
                         var arr = item.categories.replace(/\s/g,'').split(',');
-                        var findResult = arr.filter((item) => { return item == cuisine.replace(/\s/g,''); });
 
-                        if (findResult.length && item.attributes && item.attributes.RestaurantsPriceRange2 !== undefined) {
+                        var findResult = arr.filter((item) => {
+                            return item == c;
+                        });
+                        console.log("findResult", findResult);
+                        if (findResult && findResult.length && item.attributes && item.attributes.RestaurantsPriceRange2 !== undefined) {
                             console.log("priceRange", item.attributes.RestaurantsPriceRange2);
                             switch (item.attributes.RestaurantsPriceRange2) {
                                 case "1":
@@ -313,7 +317,7 @@ class PriceCharts extends React.Component {
                                     break;
                             }
                         }
-                        else if (item.categories.match(pattern)) {
+                        else if (findResult && findResult.length) {
                             barChartItem["field5"] = barChartItem["field5"] + 1;
                         }
                     });
@@ -344,7 +348,7 @@ class PriceCharts extends React.Component {
                         'priceRange': 'No Info'
                     }
                 ];
-                response.data.results.forEach((item) => {
+                response.data.results.map((item) => {
                     if (item.attributes && item.attributes.RestaurantsPriceRange2 !== undefined) {
                         switch (parseInt(item.attributes.RestaurantsPriceRange2)) {
                             case 1:
