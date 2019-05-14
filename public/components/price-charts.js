@@ -1,6 +1,6 @@
 'use strict';
 const CancelToken = axios.CancelToken;
-let pendingAPI = [];
+let pendingAPIPrice = [];
 const selector = '#price-charts';
 const e = React.createElement;
 
@@ -14,6 +14,37 @@ class PriceCharts extends React.Component {
             isReset: true,
             token: 0
         }
+    }
+
+    onStateSelect(stateList) {
+        this.setState({
+            selectedStates: stateList,
+            selectedCities: [],
+            selectedCuisines: []
+        });
+        $("#price-chart, #price-chart-2").empty();
+    }
+
+    onCitySelect(cityList) {
+        this.setState({
+            selectedCities: cityList
+        });
+        this.state.selectedCuisines.length && this.drawAllCharts();
+    }
+
+    onCuisineSelect(cuisineList) {
+        let number_pending_api = pendingAPIPrice.length;
+        if (number_pending_api > 0) {
+            // Cancel all
+            for (let i = number_pending_api - 1; i >= 0; i--) {
+                pendingAPIPrice[i].cancel("Cancelled the previous API calls by the user");
+                pendingAPIPrice.pop()
+            }
+        }
+        this.setState({
+            selectedCuisines: cuisineList,
+            token: CancelToken.source()
+        });
     }
 
     drawGroupBarChart(data, selector) {
@@ -65,7 +96,7 @@ class PriceCharts extends React.Component {
             .enter()
             .append("rect")
             .attr("class", "bar field1")
-            .style("fill", "#0984e3")
+            .style("fill", "#C6DAEF")
             .attr("x", d => xScale1('field1'))
             .attr("y", d => yScale(d.field1))
             .attr("width", xScale1.bandwidth())
@@ -81,7 +112,7 @@ class PriceCharts extends React.Component {
             .enter()
             .append("rect")
             .attr("class", "bar field2")
-            .style("fill", "#d63031")
+            .style("fill", "#9ECAE1")
             .attr("x", d => xScale1('field2'))
             .attr("y", d => yScale(d.field2))
             .attr("width", xScale1.bandwidth())
@@ -99,7 +130,7 @@ class PriceCharts extends React.Component {
             .attr("class", "bar field3")
             .transition()
             .duration(2000)
-            .style("fill", "#00b894")
+            .style("fill", "#6BAED6")
             .attr("x", d => xScale1('field3'))
             .attr("y", d => yScale(d.field3))
             .attr("width", xScale1.bandwidth())
@@ -115,7 +146,7 @@ class PriceCharts extends React.Component {
             .attr("class", "bar field2")
             .transition()
             .duration(2000)
-            .style("fill", "#e17055")
+            .style("fill", "#3082BD")
             .attr("x", d => xScale1('field4'))
             .attr("y", d => yScale(d.field4))
             .attr("width", xScale1.bandwidth())
@@ -131,7 +162,7 @@ class PriceCharts extends React.Component {
             .attr("class", "bar field5")
             .transition()
             .duration(2000)
-            .style("fill", "grey")
+            .style("fill", "#1866B4")
             .attr("x", d => xScale1('field5'))
             .attr("y", d => yScale(d.field5))
             .attr("width", xScale1.bandwidth())
@@ -197,7 +228,7 @@ class PriceCharts extends React.Component {
             .enter().append("rect")
             .attr("class", "bar")
             .style('fill', function (d, i) {
-                let colors = ['#74b9ff', '#ff7675', '#00b894', '#6c5ce7', '#b2bec3'];
+                let colors = ['#C6DAEF', '#9ECAE1', '#6BAED6', '#3082BD', '#1866B4'];
                 return colors[i];
             })
             .attr("x", function (d) {
@@ -223,40 +254,9 @@ class PriceCharts extends React.Component {
             .call(d3.axisLeft(y));
     }
 
-    onStateSelect(stateList) {
-        this.setState({
-            selectedStates: stateList,
-            selectedCities: [],
-            selectedCuisines: []
-        });
-        $("#price-chart, #price-chart-2").empty();
-    }
-
-    onCitySelect(cityList) {
-        this.setState({
-            selectedCities: cityList
-        });
-        this.state.selectedCuisines.length && this.drawAllCharts();
-    }
-
-    onCuisineSelect(cuisineList) {
-        let number_pending_api = pendingAPI.length;
-        if (number_pending_api > 0) {
-            // Cancel all
-            for (let i = number_pending_api - 1; i >= 0; i--) {
-                pendingAPI[i].cancel("Cancelled the previous API calls by the user");
-                pendingAPI.pop()
-            }
-        }
-        this.setState({
-            selectedCuisines: cuisineList,
-            token: CancelToken.source()
-        });
-    }
-
     drawAllCharts() {
         let token = this.state.token;
-        pendingAPI.push(token);
+        pendingAPIPrice.push(token);
         let url = '/api/restaurants';
         url = url + '?state=' + this.state.selectedStates.join(',');
         url = url + '&city=' + this.state.selectedCities.join(',');
@@ -266,9 +266,9 @@ class PriceCharts extends React.Component {
                 cancelToken: token.token
             }
         ).then((response) => {
-            var index = pendingAPI.indexOf(token);
+            var index = pendingAPIPrice.indexOf(token);
             if (index !== -1) {
-                pendingAPI.splice(index, 1);
+                pendingAPIPrice.splice(index, 1);
             }
 
             if (response.data.count == 0) {
@@ -276,7 +276,7 @@ class PriceCharts extends React.Component {
             }
             else {
                 let groupBarChartData = [];
-                this.state.selectedCuisines.map((cuisine) => {
+                this.state.selectedCuisines.forEach((cuisine) => {
                     let barChartItem = {
                         'model_name': cuisine,
                         'field1': 0,
@@ -285,12 +285,15 @@ class PriceCharts extends React.Component {
                         'field4': 0,
                         'field5': 0,
                     }
-                    response.data.results.map((item) => {
+                    response.data.results.forEach((item) => {
                         // {state: '', $: 1, $$: 15, $$$: 16, $$$$: 234, ? : 33434}
                         // { 'state': 'Mexican', $: 1, $$: 15, $$$: 16, $$$$: 234, ? : 33434 }
-                        let pattern = '/' + cuisine + '/g';
-                        console.log(item.categories.match(pattern));
-                        if (item.attributes && item.attributes.RestaurantsPriceRange2 !== undefined) {
+                        //let pattern = '/' + cuisine + '/i';
+                        // console.log(item.categories.match(pattern));
+                        var arr = item.categories.replace(/\s/g,'').split(',');
+                        var findResult = arr.filter((item) => { return item == cuisine.replace(/\s/g,''); });
+
+                        if (findResult.length && item.attributes && item.attributes.RestaurantsPriceRange2 !== undefined) {
                             console.log("priceRange", item.attributes.RestaurantsPriceRange2);
                             switch (item.attributes.RestaurantsPriceRange2) {
                                 case "1":
@@ -317,6 +320,8 @@ class PriceCharts extends React.Component {
                     groupBarChartData.push(barChartItem);
                 });
 
+                this.drawGroupBarChart(groupBarChartData, '#price-chart');
+
                 let barChartData = [
                     {
                         'count': 0,
@@ -339,7 +344,7 @@ class PriceCharts extends React.Component {
                         'priceRange': 'No Info'
                     }
                 ];
-                response.data.results.map((item) => {
+                response.data.results.forEach((item) => {
                     if (item.attributes && item.attributes.RestaurantsPriceRange2 !== undefined) {
                         switch (parseInt(item.attributes.RestaurantsPriceRange2)) {
                             case 1:
@@ -363,7 +368,6 @@ class PriceCharts extends React.Component {
                     }
 
                 });
-                this.drawGroupBarChart(groupBarChartData, '#price-chart');
                 this.drawBarChart(barChartData, '#price-chart-2');
             }
         }).catch(function (thrown) {

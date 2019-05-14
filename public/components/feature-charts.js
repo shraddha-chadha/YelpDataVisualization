@@ -1,6 +1,6 @@
 'use strict';
 const CancelToken = axios.CancelToken;
-let pendingAPI = [];
+let pendingAPIFeature = [];
 const selector = '#feature-charts';
 const e = React.createElement;
 
@@ -12,6 +12,28 @@ class FeatureCharts extends React.Component {
             selectedCities: [],
             token: 0
         }
+    }
+
+    onStateSelect(stateList) {
+        this.setState({
+            selectedStates: stateList,
+            selectedCities: []
+        });
+    }
+
+    onCitySelect(cityList) {
+        let number_pending_api = pendingAPIFeature.length;
+        if (number_pending_api > 0) {
+            // Cancel all
+            for (let i = number_pending_api - 1; i >= 0; i--) {
+                pendingAPIFeature[i].cancel("Cancelled the previous API calls by the user");
+                pendingAPIFeature.pop()
+            }
+        }
+        this.setState({
+            selectedCities: cityList,
+            token: CancelToken.source()
+        });
     }
 
     drawChart(data, selector) {
@@ -29,7 +51,7 @@ class FeatureCharts extends React.Component {
         var tooltipMargin = 13;
 
         var radius = Math.min(width - padding, height - padding) / 2;
-        var color = d3.scaleOrdinal(d3.schemeCategory10);
+        var color = d3.scaleOrdinal(d3.schemeCategory20c);
 
         var svg = d3.select(selector)
             .append('svg')
@@ -153,34 +175,12 @@ class FeatureCharts extends React.Component {
         keys.exit().remove();
     }
 
-    onStateSelect(stateList) {
-        this.setState({
-            selectedStates: stateList,
-            selectedCities: []
-        });
-    }
-
-    onCitySelect(cityList) {
-        let number_pending_api = pendingAPI.length;
-        if (number_pending_api > 0) {
-            // Cancel all
-            for (let i = number_pending_api - 1; i >= 0; i--) {
-                pendingAPI[i].cancel("Cancelled the previous API calls by the user");
-                pendingAPI.pop()
-            }
-        }
-        this.setState({
-            selectedCities: cityList,
-            token: CancelToken.source()
-        });
-    }
-
     render() {
 
         if (this.state.selectedCities.length && this.state.selectedStates.length) {
             $("#feature-chart").html('Loading...');
             let token = this.state.token;
-            pendingAPI.push(token);
+            pendingAPIFeature.push(token);
             let url = '/api/restaurants';
             url = url + '?state=' + this.state.selectedStates.join(',');
             url = url + '&city=' + this.state.selectedCities.join(',')
@@ -189,9 +189,9 @@ class FeatureCharts extends React.Component {
                     cancelToken: token.token
                 }
             ).then((response) => {
-                var index = pendingAPI.indexOf(token);
+                var index = pendingAPIFeature.indexOf(token);
                 if (index !== -1) {
-                    pendingAPI.splice(index, 1);
+                    pendingAPIFeature.splice(index, 1);
                 }
 
                 var data = [
