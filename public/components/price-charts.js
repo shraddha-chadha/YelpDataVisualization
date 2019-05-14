@@ -8,7 +8,8 @@ class PriceCharts extends React.Component {
     this.state = {
         selectedStates: [],
         selectedCuisines: [],
-        selectedCities: []
+        selectedCities: [],
+        isReset: true
     }
   }
 
@@ -220,20 +221,18 @@ class PriceCharts extends React.Component {
             selectedCities: [],
             selectedCuisines: []
         });
+        $("#price-chart, #price-chart-2").empty();
     }
 
     onCitySelect(cityList) {
         this.setState({
-            selectedCities: cityList,
-            selectedCuisines: []
+            selectedCities: cityList
         });
+        this.state.selectedCuisines.length && this.drawAllCharts();
     }
 
-
-
-  render() {
-      if (this.state.selectedStates.length && this.state.selectedCities.length && this.state.selectedCuisines.length) {
-          let url = '/api/restaurants';
+ drawAllCharts() {
+      let url = '/api/restaurants';
           url = url + '?state=' + this.state.selectedStates.join(',');
           url = url + '&city=' + this.state.selectedCities.join(',');
           url = url + '&cuisine=' + this.state.selectedCuisines.join(',');
@@ -335,7 +334,11 @@ class PriceCharts extends React.Component {
           }).finally(() => {
 
           });
+ }
 
+  render() {
+      if (this.state.selectedStates.length && this.state.selectedCities.length && this.state.selectedCuisines.length) {
+          this.drawAllCharts();
       }
     return (
         <div className="container p-0">

@@ -226,3 +226,20 @@ svg {
     margin-top: 20px;
     box-shadow: 0px 5px 5px #c1c1c1!important;
 }
+#feature-chart {
+    text-align: center;
+    background: #f3f3f3;
+    border-radius: 5px;
+    margin-top: 20px;
+    box-shadow: 0px 5px 5px #c1c1c1!important;
+}
+
+#feature-chart svg {
+    box-shadow: none !important;
+    background: transparent;
+}
+
+#feature-chart .legend {
+    position: absolute;
+    top: 0;
+}

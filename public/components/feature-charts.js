@@ -48,7 +48,7 @@ class FeatureCharts extends React.Component {
             var path = g.selectAll('path')
             .data(pie(data))
             .enter()
-            .append("g")  
+            .append("g")
             .append('path')
             .attr('d', arc)
             .attr('fill', (d,i) => color(i))
@@ -57,20 +57,20 @@ class FeatureCharts extends React.Component {
             .on("mouseover", function(d) {
                 d3.selectAll('path')
                     .style("opacity", otherOpacityOnHover);
-                d3.select(this) 
+                d3.select(this)
                     .style("opacity", opacityHover);
 
-                let g = d3.select("svg")
+                let g = d3.select(selector + ' svg')
                     .style("cursor", "pointer")
                     .append("g")
                     .attr("class", "tooltip")
                     .style("opacity", 0);
-            
+
                 g.append("text")
                     .attr("class", "name-text")
                     .text(`${d.data.name} (${d.data.value})`)
                     .attr('text-anchor', 'middle');
-                
+
                 let text = g.select("text");
                 let bbox = text.node().getBBox();
                 let padding = 2;
@@ -86,8 +86,8 @@ class FeatureCharts extends React.Component {
                     let mousePosition = d3.mouse(this);
                     let x = mousePosition[0] + width/2;
                     let y = mousePosition[1] + height/2 - tooltipMargin;
-                
-                    let text = d3.select('.tooltip text');
+
+                    let text = d3.select(selector + ' .tooltip text');
                     let bbox = text.node().getBBox();
                     if(x - bbox.width/2 < 0) {
                     x = bbox.width/2;
@@ -95,32 +95,32 @@ class FeatureCharts extends React.Component {
                     else if(width - x - bbox.width/2 < 0) {
                     x = width - bbox.width/2;
                     }
-                
+
                     if(y - bbox.height/2 < 0) {
                     y = bbox.height + tooltipMargin * 2;
                     }
                     else if(height - y - bbox.height/2 < 0) {
                     y = height - bbox.height/2;
                     }
-                
-                    d3.select('.tooltip')
+
+                    d3.select(selector + ' .tooltip')
                     .style("opacity", 1)
                     .attr('transform',`translate(${x}, ${y})`);
                 })
-            .on("mouseout", function(d) {   
-                d3.select("svg")
-                    .style("cursor", "none")  
-                    .select(".tooltip").remove();
+            .on("mouseout", function(d) {
+                d3.select(selector + " svg")
+                    .style("cursor", "none")
+                    .select(selector + " .tooltip").remove();
                 d3.selectAll('path')
                     .style("opacity", opacity);
                 })
             .on("touchstart", function(d) {
-                d3.select("svg")
-                    .style("cursor", "none");    
+                d3.select(selector + " svg")
+                    .style("cursor", "none");
             })
             .each(function(d, i) { this._current = i; });
 
-            let legend = d3.select("#chart").append('div')
+            let legend = d3.select(selector).append('div')
                         .attr('class', 'legend')
                         .style('margin-top', '30px');
 
@@ -174,14 +174,14 @@ class FeatureCharts extends React.Component {
             response.data.results.map((item) => {
                 if (item.attributes && item.attributes.WiFi) {
                     if (item.attributes.WiFi.includes('no')) {
-                        data[1].value = data[1].value + 1; 
+                        data[1].value = data[1].value + 1;
                     }
                     if (item.attributes.WiFi.includes('free')) {
-                        data[0].value = data[0].value + 1; 
+                        data[0].value = data[0].value + 1;
                     }
                 }
                 else {
-                    data[2].value = data[2].value + 1; 
+                    data[2].value = data[2].value + 1;
                 }
 
             });
@@ -191,7 +191,7 @@ class FeatureCharts extends React.Component {
           }).finally(() => {
 
           });
-          
+
       }
     return (
         <div className="container p-0">
