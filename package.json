@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/shraddha-chadha/yelp-data-visualization#readme",
   "devDependencies": {
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "pm2": "^3.5.0"
   },
   "dependencies": {
